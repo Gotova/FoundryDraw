@@ -1,7 +1,7 @@
 # Changelog
 
 ## 1.3.8 - 2026-06-08
-- (Bitte Aenderungen hier eintragen)
+- Feature: Each additional press of the "Insert centred circle" button draws an outer ring 50 px larger than the previous one; the canvas height grows by 200 px each time to make room; circle counter resets when the canvas is cleared
 
 
 ## 1.3.7 - 2026-06-08

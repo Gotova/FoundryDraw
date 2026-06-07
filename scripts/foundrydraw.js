@@ -27,6 +27,9 @@ class FoundryDrawApp extends Application {
     this._opacity    = 1.0;
     this._symmetry   = 1;
     this._keyHandler = null;
+
+    this._circleCount      = 0;   // how many template circles have been inserted
+    this._baseCircleRadius = null; // radius of the first inserted circle
   }
 
   static get defaultOptions() {
@@ -365,6 +368,8 @@ class FoundryDrawApp extends Application {
 
     html.find("#fd-clear").on("click", () => {
       this._redoStack = [];
+      this._circleCount      = 0;
+      this._baseCircleRadius = null;
       this._fillBackground();
       this._saveHistory();
       this._syncToBacking();
@@ -509,11 +514,24 @@ class FoundryDrawApp extends Application {
   }
 
   _insertCircleTemplate() {
-    const w  = this._canvas.width;
-    const h  = this._canvas.height;
-    const cx = w / 2;
-    const cy = h / 2;
-    const r  = Math.min(w, h) / 2 * 0.85;
+    const spacing = 50; // px between consecutive circles
+
+    if (this._circleCount === 0) {
+      // First circle: derive base radius from current canvas proportions
+      this._baseCircleRadius = Math.round(
+        Math.min(this._canvas.width, this._canvas.height) / 2 * 0.85
+      );
+    } else {
+      // Outer circle: grow canvas height first so the ring has room
+      const newH = this._wrap.clientHeight + 200;
+      this._wrap.style.height = `${newH}px`;
+      this._onResize(); // recentres existing content in the larger canvas
+    }
+
+    // Read dimensions AFTER potential resize so cx/cy are up-to-date
+    const cx = this._canvas.width  / 2;
+    const cy = this._canvas.height / 2;
+    const r  = this._baseCircleRadius + this._circleCount * spacing;
 
     this._redoStack = [];
 
@@ -529,6 +547,7 @@ class FoundryDrawApp extends Application {
     ctx.arc(cx, cy, r, 0, Math.PI * 2);
     ctx.stroke();
 
+    this._circleCount++;
     this._saveHistory();
     this._syncToBacking();
     this._updateHistoryInfo();
