@@ -1,7 +1,7 @@
 # Changelog
 
 ## 1.3.1 - 2026-06-08
-- (Bitte Aenderungen hier eintragen)
+- Fix: Canvas height now correctly fills the window — removed display:flex from .window-app (was fighting Foundry's layout) and instead compute .window-content height directly in JS via _syncContentHeight()
 
 
 ## 1.3.0 - 2026-06-08

@@ -1,27 +1,14 @@
 /* FoundryDraw - Magic Circle Painter */
 
 /* ───── Application Window ───── */
-
-/* Make the outer window frame a flex column so .window-content can fill height */
-.foundrydraw-app.window-app {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.foundrydraw-app .window-header {
-  flex-shrink: 0;
-}
-
 .foundrydraw-app .window-content {
-  /* flex: 1 fills remaining height inside the window frame */
-  flex: 1;
-  min-height: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   background: #2c2416;
+  /* Height is set explicitly by JS (setPosition / _initWhenReady) so that
+     the flex children can grow without fighting Foundry's own layout. */
 }
 
 /* ───── Toolbar ───── */

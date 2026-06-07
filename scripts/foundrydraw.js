@@ -193,8 +193,26 @@ class FoundryDrawApp extends Application {
   setPosition(pos = {}) {
     const result = super.setPosition(pos);
     // Defer so Foundry has time to apply the new inline style first
-    requestAnimationFrame(() => this._onResize());
+    requestAnimationFrame(() => {
+      this._syncContentHeight();
+      this._onResize();
+    });
     return result;
+  }
+
+  /* Explicitly set .window-content height = app height minus header.
+     Foundry does not always do this itself, so flex children inside the
+     content (toolbar, canvas-wrap, status) cannot otherwise grow to fill
+     the available space. */
+  _syncContentHeight() {
+    // Walk up: wrap → .window-content → .window-app
+    const appEl = this._wrap?.parentElement?.parentElement;
+    if (!appEl) return;
+    const header  = appEl.querySelector('.window-header');
+    const content = appEl.querySelector('.window-content');
+    if (!header || !content) return;
+    const availH = appEl.offsetHeight - header.offsetHeight;
+    if (availH > 0) content.style.height = `${availH}px`;
   }
 
   async close(options = {}) {
@@ -209,6 +227,8 @@ class FoundryDrawApp extends Application {
 
   _initWhenReady(attempts) {
     if (!this._wrap) return; // app closed before init completed
+    // Set .window-content height first so flex children get the right space
+    this._syncContentHeight();
     const w = this._wrap.clientWidth;
     const h = this._wrap.clientHeight;
     if (w <= 0 || h <= 0) {
