@@ -523,7 +523,7 @@ class FoundryDrawApp extends Application {
       );
     } else {
       // Outer circle: grow canvas height first so the ring has room
-      const newH = this._wrap.clientHeight + 200;
+      const newH = this._wrap.clientHeight + 100;
       this._wrap.style.height = `${newH}px`;
       this._onResize(); // recentres existing content in the larger canvas
     }
