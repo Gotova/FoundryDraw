@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.3.0 - 2026-06-08
+- (Bitte Aenderungen hier eintragen)
+
+
+## 1.2.1 - 2026-06-08
+- Fix: Drawing is no longer lost when the window is made smaller and then enlarged again
+- Fix: Backing canvas preserves all content; shrinking the window only clips the view
+- Fix: Dropdown menus (Symmetry) are now readable (white-on-white text was invisible)
+
+## 1.1.2 - 2026-06-08
+- Fix: Canvas elements not found crash ("Cannot read properties of undefined (reading 'clientWidth')")
+- Fix: Use document.getElementById() instead of html.find() for root-level elements
+
+## 1.1.1 - 2026-06-08
+- Fix: Canvas coordinates were distorted (very wide but nearly no height)
+- Fix: Transparent checkerboard background instead of parchment – now shows correctly
+- Fix: Copy to Clipboard crashed on plain HTTP (navigator.clipboard undefined); added window.open() fallback
+
 ## 1.1.0 - 2026-06-08
 - Canvas fills the entire window (resizes automatically when window is resized)
 - Default brush color changed to black
