@@ -150,11 +150,20 @@ class FoundryDrawApp extends Application {
   activateListeners(html) {
     super.activateListeners(html);
 
-    this._canvas  = html.find("#foundrydraw-canvas")[0];
-    this._overlay = html.find("#foundrydraw-overlay")[0];
-    this._ctx     = this._canvas.getContext("2d");
-    this._octx    = this._overlay.getContext("2d");
-    this._wrap    = html.find("#fd-canvas-wrap")[0];
+    // Use getElementById instead of html.find() – the three root divs
+    // returned by _renderInner are siblings in the jQuery collection,
+    // so find() cannot locate them (it only searches descendants).
+    this._canvas  = document.getElementById("foundrydraw-canvas");
+    this._overlay = document.getElementById("foundrydraw-overlay");
+    this._wrap    = document.getElementById("fd-canvas-wrap");
+
+    if (!this._canvas || !this._overlay || !this._wrap) {
+      console.error(`${MODULE_ID} | canvas elements not found in DOM`);
+      return;
+    }
+
+    this._ctx  = this._canvas.getContext("2d");
+    this._octx = this._overlay.getContext("2d");
 
     // Size canvas to fill the container.
     // Retry up to 20 times (every 16 ms) until the wrap has a real size –
@@ -197,6 +206,7 @@ class FoundryDrawApp extends Application {
      ────────────────────────────────────────────── */
 
   _initWhenReady(attempts) {
+    if (!this._wrap) return; // app closed before init completed
     const w = this._wrap.clientWidth;
     const h = this._wrap.clientHeight;
     if (w <= 0 || h <= 0) {
