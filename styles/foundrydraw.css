@@ -136,7 +136,7 @@
 .fd-select {
   height: 28px;
   background: #2c2010;
-  color: #b8965a;
+  color: #e8d5a3;
   border: 1px solid #5c4a1e;
   border-radius: 4px;
   padding: 0 4px;
@@ -144,12 +144,19 @@
   cursor: pointer;
   transition: border-color 0.15s;
   flex-shrink: 0;
+  /* Makes the browser use a dark-themed native dropdown on Windows/Chrome */
+  color-scheme: dark;
 }
 
 .fd-select:hover,
 .fd-select:focus {
   border-color: #c8962a;
   outline: none;
+}
+
+/* Firefox + some Chromium builds honour these */
+.fd-select option {
+  background: #2c2010;
   color: #e8d5a3;
 }
 

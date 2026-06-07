@@ -228,23 +228,20 @@ class FoundryDrawApp extends Application {
   }
 
   _onResize() {
-    if (!this._canvas || !this._overlay) return;
+    if (!this._canvas || !this._overlay || !this._back) return;
     const w = this._wrap.clientWidth;
     const h = this._wrap.clientHeight;
     if (w <= 0 || h <= 0) return;
     if (this._canvas.width === w && this._canvas.height === h) return;
 
-    // Snapshot the current drawing before resizing (resize clears the buffer)
-    const tmp = document.createElement("canvas");
-    tmp.width  = this._canvas.width;
-    tmp.height = this._canvas.height;
-    tmp.getContext("2d").drawImage(this._canvas, 0, 0);
+    // Grow the backing canvas first if the window just got larger
+    this._expandBacking(w, h);
 
+    // Resize the display canvas (this clears it)
     this._applyCanvasSize(w, h);
 
-    // Repaint background then restore drawing on top
-    this._fillBackground();
-    this._ctx.drawImage(tmp, 0, 0);
+    // Restore from the backing canvas – never loses content
+    this._ctx.drawImage(this._back, 0, 0);
   }
 
   /* ──────────────────────────────────────────────
@@ -252,8 +249,55 @@ class FoundryDrawApp extends Application {
      ────────────────────────────────────────────── */
 
   _initCanvas() {
+    // The backing canvas is the source of truth – it never shrinks.
+    // When the window is made smaller we only clip the VIEW; the backing
+    // retains every pixel so making the window larger again restores them.
+    this._back    = document.createElement("canvas");
+    this._back.width  = this._canvas.width;
+    this._back.height = this._canvas.height;
+    this._backCtx = this._back.getContext("2d");
+
     this._fillBackground();
+    this._syncToBacking();
     this._saveHistory();
+  }
+
+  /* Copy the display canvas into the backing canvas at (0,0). */
+  _syncToBacking() {
+    if (!this._back) return;
+    this._backCtx.drawImage(this._canvas, 0, 0);
+  }
+
+  /* Grow the backing canvas when the display grows larger than it has ever been. */
+  _expandBacking(w, h) {
+    if (w <= this._back.width && h <= this._back.height) return;
+    const newW = Math.max(this._back.width, w);
+    const newH = Math.max(this._back.height, h);
+
+    // Snapshot old backing content
+    const tmp = document.createElement("canvas");
+    tmp.width  = this._back.width;
+    tmp.height = this._back.height;
+    tmp.getContext("2d").drawImage(this._back, 0, 0);
+
+    this._back.width  = newW;
+    this._back.height = newH;
+
+    // Fill entire new backing with parchment, then restore old content
+    const ctx = this._backCtx;
+    ctx.globalAlpha = 1.0;
+    ctx.globalCompositeOperation = "source-over";
+    ctx.fillStyle = "#e8d5a3";
+    ctx.fillRect(0, 0, newW, newH);
+    const vig = ctx.createRadialGradient(
+      newW / 2, newH / 2, Math.min(newW, newH) * 0.25,
+      newW / 2, newH / 2, Math.max(newW, newH) * 0.8
+    );
+    vig.addColorStop(0, "rgba(0,0,0,0)");
+    vig.addColorStop(1, "rgba(60,30,0,0.2)");
+    ctx.fillStyle = vig;
+    ctx.fillRect(0, 0, newW, newH);
+    ctx.drawImage(tmp, 0, 0);
   }
 
   _fillBackground() {
@@ -316,6 +360,7 @@ class FoundryDrawApp extends Application {
       this._saveHistory();
       this._redoStack = [];
       this._fillBackground();
+      this._syncToBacking();
       this._updateHistoryInfo();
     });
 
@@ -366,6 +411,7 @@ class FoundryDrawApp extends Application {
     if (this._tool === "fill") {
       this._floodFill(Math.round(p.x), Math.round(p.y));
       this._drawing = false;
+      this._syncToBacking();
       this._updateHistoryInfo();
     } else if (this._tool === "brush" || this._tool === "eraser") {
       this._dot(p.x, p.y);
@@ -395,6 +441,7 @@ class FoundryDrawApp extends Application {
       this._octx.clearRect(0, 0, this._overlay.width, this._overlay.height);
       this._drawShape(this._ctx, this._startX, this._startY, p.x, p.y);
     }
+    this._syncToBacking();
     this._updateHistoryInfo();
   }
 
@@ -555,6 +602,7 @@ class FoundryDrawApp extends Application {
     if (this._history.length <= 1) return;
     this._redoStack.push(this._history.pop());
     this._ctx.putImageData(this._history[this._history.length - 1], 0, 0);
+    this._syncToBacking();
     this._updateHistoryInfo();
   }
 
@@ -563,6 +611,7 @@ class FoundryDrawApp extends Application {
     const next = this._redoStack.pop();
     this._history.push(next);
     this._ctx.putImageData(next, 0, 0);
+    this._syncToBacking();
     this._updateHistoryInfo();
   }
 
