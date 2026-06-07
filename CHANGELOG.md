@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.0 - 2026-06-08
+- (Bitte Aenderungen hier eintragen)
+
+
 ## 1.3.9 - 2026-06-08
 - Change: Canvas height growth per outer circle reduced from 200 px to 100 px
 
