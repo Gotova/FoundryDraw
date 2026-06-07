@@ -1,7 +1,7 @@
 # Changelog
 
 ## 1.3.7 - 2026-06-08
-- (Bitte Aenderungen hier eintragen)
+- Fix: Undo no longer skips two steps — history is now saved after each completed action instead of before, eliminating the duplicate initial-state entry that caused one undo to undo two strokes
 
 
 ## 1.3.6 - 2026-06-08

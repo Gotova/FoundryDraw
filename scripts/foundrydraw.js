@@ -364,9 +364,9 @@ class FoundryDrawApp extends Application {
     html.find("#fd-insert-circle").on("click", () => this._insertCircleTemplate());
 
     html.find("#fd-clear").on("click", () => {
-      this._saveHistory();
       this._redoStack = [];
       this._fillBackground();
+      this._saveHistory();
       this._syncToBacking();
       this._updateHistoryInfo();
     });
@@ -412,12 +412,12 @@ class FoundryDrawApp extends Application {
     this._startX = this._lastX = p.x;
     this._startY = this._lastY = p.y;
 
-    this._saveHistory();
     this._redoStack = [];
 
     if (this._tool === "fill") {
       this._floodFill(Math.round(p.x), Math.round(p.y));
       this._drawing = false;
+      this._saveHistory();
       this._syncToBacking();
       this._updateHistoryInfo();
     } else if (this._tool === "brush" || this._tool === "eraser") {
@@ -448,6 +448,7 @@ class FoundryDrawApp extends Application {
       this._octx.clearRect(0, 0, this._overlay.width, this._overlay.height);
       this._drawShape(this._ctx, this._startX, this._startY, p.x, p.y);
     }
+    this._saveHistory();
     this._syncToBacking();
     this._updateHistoryInfo();
   }
@@ -514,7 +515,6 @@ class FoundryDrawApp extends Application {
     const cy = h / 2;
     const r  = Math.min(w, h) / 2 * 0.85;
 
-    this._saveHistory();
     this._redoStack = [];
 
     const ctx = this._ctx;
@@ -529,6 +529,7 @@ class FoundryDrawApp extends Application {
     ctx.arc(cx, cy, r, 0, Math.PI * 2);
     ctx.stroke();
 
+    this._saveHistory();
     this._syncToBacking();
     this._updateHistoryInfo();
   }
