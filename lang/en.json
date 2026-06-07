@@ -13,6 +13,7 @@
     "Actions": {
       "Undo": "Undo (Ctrl+Z)",
       "Redo": "Redo (Ctrl+Y)",
+      "InsertCircle": "Insert centred circle",
       "Clear": "Clear All",
       "CopyClipboard": "Copy to Clipboard",
       "CopiedClipboard": "Image copied to clipboard!",

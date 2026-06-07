@@ -13,6 +13,7 @@
     "Actions": {
       "Undo": "Rueckgaengig (Ctrl+Z)",
       "Redo": "Wiederholen (Ctrl+Y)",
+      "InsertCircle": "Zentrierten Kreis einfuegen",
       "Clear": "Alles loeschen",
       "CopyClipboard": "In Zwischenablage kopieren",
       "CopiedClipboard": "Bild in Zwischenablage kopiert!",

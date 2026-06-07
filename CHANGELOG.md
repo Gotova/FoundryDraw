@@ -1,7 +1,7 @@
 # Changelog
 
 ## 1.3.6 - 2026-06-08
-- (Bitte Aenderungen hier eintragen)
+- Feature: New "Insert centred circle" button (fa-circle-plus) draws a perfectly centred circle at 85 % of the shorter canvas dimension as an outer boundary for magic circles
 
 
 ## 1.3.5 - 2026-06-08

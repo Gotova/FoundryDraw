@@ -97,13 +97,16 @@ class FoundryDrawApp extends Application {
 
   <div class="separator"></div>
 
-  <button class="fd-tool-btn" id="fd-undo"      data-tooltip="${i18n("Actions.Undo")}">
+  <button class="fd-tool-btn" id="fd-undo"           data-tooltip="${i18n("Actions.Undo")}">
     <i class="fas fa-undo"></i>
   </button>
-  <button class="fd-tool-btn" id="fd-redo"      data-tooltip="${i18n("Actions.Redo")}">
+  <button class="fd-tool-btn" id="fd-redo"           data-tooltip="${i18n("Actions.Redo")}">
     <i class="fas fa-redo"></i>
   </button>
-  <button class="fd-tool-btn" id="fd-clear"     data-tooltip="${i18n("Actions.Clear")}">
+  <button class="fd-tool-btn" id="fd-insert-circle"  data-tooltip="${i18n("Actions.InsertCircle")}">
+    <i class="fas fa-circle-plus"></i>
+  </button>
+  <button class="fd-tool-btn" id="fd-clear"          data-tooltip="${i18n("Actions.Clear")}">
     <i class="fas fa-trash"></i>
   </button>
   <button class="fd-tool-btn" id="fd-clipboard" data-tooltip="${i18n("Actions.CopyClipboard")}">
@@ -358,6 +361,7 @@ class FoundryDrawApp extends Application {
 
     html.find("#fd-undo").on("click", () => this._undo());
     html.find("#fd-redo").on("click", () => this._redo());
+    html.find("#fd-insert-circle").on("click", () => this._insertCircleTemplate());
 
     html.find("#fd-clear").on("click", () => {
       this._saveHistory();
@@ -501,6 +505,32 @@ class FoundryDrawApp extends Application {
       const angle = baseAngle + step * i;
       fn(cx, cy, cx + r * Math.cos(angle), cy + r * Math.sin(angle));
     }
+  }
+
+  _insertCircleTemplate() {
+    const w  = this._canvas.width;
+    const h  = this._canvas.height;
+    const cx = w / 2;
+    const cy = h / 2;
+    const r  = Math.min(w, h) / 2 * 0.85;
+
+    this._saveHistory();
+    this._redoStack = [];
+
+    const ctx = this._ctx;
+    ctx.globalAlpha              = 1.0;
+    ctx.globalCompositeOperation = "source-over";
+    ctx.strokeStyle              = this._color;
+    ctx.lineWidth                = this._brushSize;
+    ctx.lineCap                  = "round";
+    ctx.lineJoin                 = "round";
+
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.stroke();
+
+    this._syncToBacking();
+    this._updateHistoryInfo();
   }
 
   _drawShape(ctx, x1, y1, x2, y2) {
