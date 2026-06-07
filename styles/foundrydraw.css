@@ -7,6 +7,8 @@
   flex-direction: column;
   overflow: hidden;
   background: #2c2416;
+  /* fill the window frame so flex children can grow */
+  height: 100%;
 }
 
 /* ───── Toolbar ───── */
@@ -91,9 +93,7 @@
   transition: border-color 0.15s;
 }
 
-.fd-color-btn:hover {
-  border-color: #c8962a;
-}
+.fd-color-btn:hover { border-color: #c8962a; }
 
 .fd-color-btn input[type="color"] {
   position: absolute;
@@ -157,37 +157,34 @@
 
 /* ───── Canvas Area ───── */
 .foundrydraw-canvas-wrap {
-  flex: 1;
+  /* grow to fill remaining height, never collapse below 400px */
+  flex: 1 1 0;
+  min-height: 400px;
+  min-width: 720px;
   position: relative;
   overflow: hidden;
-  /* Parchment-style checkerboard for transparent mode */
-  background-image:
-    linear-gradient(45deg, #c8a86840 25%, transparent 25%),
-    linear-gradient(-45deg, #c8a86840 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, #c8a86840 75%),
-    linear-gradient(-45deg, transparent 75%, #c8a86840 75%);
-  background-size: 16px 16px;
-  background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
-  background-color: #a8884c;
+  /* parchment colour for the transparent-bg mode */
+  background: #c8a96e;
 }
 
-/* Main drawing canvas – fills the entire wrap */
+/*
+  The canvas elements are sized purely by JS (canvas.width / canvas.height attributes).
+  Do NOT set width/height here – CSS size != buffer size causes distortion.
+  Absolute positioning keeps both canvases stacked on top of each other.
+*/
 #foundrydraw-canvas {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  top: 0;
+  left: 0;
   display: block;
   cursor: crosshair;
   touch-action: none;
 }
 
-/* Shape-preview overlay – same size, no pointer events */
 #foundrydraw-overlay {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  top: 0;
+  left: 0;
   display: block;
   pointer-events: none;
 }
@@ -209,6 +206,4 @@
   flex-shrink: 0;
 }
 
-.foundrydraw-status .fd-coords {
-  font-family: monospace;
-}
+.foundrydraw-status .fd-coords { font-family: monospace; }

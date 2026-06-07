@@ -156,11 +156,10 @@ class FoundryDrawApp extends Application {
     this._octx    = this._overlay.getContext("2d");
     this._wrap    = html.find("#fd-canvas-wrap")[0];
 
-    // Size canvas to fill the container after the DOM has laid out
-    requestAnimationFrame(() => {
-      this._resizeCanvasToWrap();
-      this._initCanvas();
-    });
+    // Size canvas to fill the container.
+    // Retry up to 20 times (every 16 ms) until the wrap has a real size –
+    // flex layout may not be settled on the very first frame.
+    this._initWhenReady(0);
 
     this._bindControls(html);
     this._bindCanvasEvents();
@@ -197,14 +196,26 @@ class FoundryDrawApp extends Application {
      Canvas Sizing
      ────────────────────────────────────────────── */
 
-  _resizeCanvasToWrap() {
+  _initWhenReady(attempts) {
     const w = this._wrap.clientWidth;
     const h = this._wrap.clientHeight;
-    if (w <= 0 || h <= 0) return;
-    this._canvas.width   = w;
-    this._canvas.height  = h;
-    this._overlay.width  = w;
-    this._overlay.height = h;
+    if (w <= 0 || h <= 0) {
+      if (attempts < 20) setTimeout(() => this._initWhenReady(attempts + 1), 16);
+      return;
+    }
+    this._applyCanvasSize(w, h);
+    this._initCanvas();
+  }
+
+  /* Set both the buffer dimensions (attributes) AND the CSS pixel size.
+     These MUST match – mismatching them causes coordinate distortion. */
+  _applyCanvasSize(w, h) {
+    for (const c of [this._canvas, this._overlay]) {
+      c.width        = w;
+      c.height       = h;
+      c.style.width  = w + "px";
+      c.style.height = h + "px";
+    }
   }
 
   _onResize() {
@@ -214,16 +225,13 @@ class FoundryDrawApp extends Application {
     if (w <= 0 || h <= 0) return;
     if (this._canvas.width === w && this._canvas.height === h) return;
 
-    // Preserve current drawing
+    // Snapshot the current drawing before resizing (resize clears the buffer)
     const tmp = document.createElement("canvas");
     tmp.width  = this._canvas.width;
     tmp.height = this._canvas.height;
     tmp.getContext("2d").drawImage(this._canvas, 0, 0);
 
-    this._canvas.width   = w;
-    this._canvas.height  = h;
-    this._overlay.width  = w;
-    this._overlay.height = h;
+    this._applyCanvasSize(w, h);
 
     // Repaint background then restore drawing on top
     this._fillBackground();
@@ -575,13 +583,36 @@ class FoundryDrawApp extends Application {
      ────────────────────────────────────────────── */
 
   async _copyToClipboard() {
-    try {
-      const blob = await new Promise(resolve => this._canvas.toBlob(resolve, "image/png"));
-      await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
-      ui.notifications.info(game.i18n.localize("FOUNDRYDRAW.Actions.CopiedClipboard"));
-    } catch (err) {
+    // The Clipboard API requires a secure context (HTTPS or localhost with flag).
+    // Foundry often runs on plain HTTP, so we fall back to opening the image
+    // in a new tab where the user can right-click → Copy Image.
+    const hasClipboard = typeof navigator !== "undefined" &&
+                         navigator.clipboard &&
+                         typeof ClipboardItem !== "undefined" &&
+                         window.isSecureContext;
+
+    if (hasClipboard) {
+      try {
+        const blob = await new Promise(resolve => this._canvas.toBlob(resolve, "image/png"));
+        await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+        ui.notifications.info(game.i18n.localize("FOUNDRYDRAW.Actions.CopiedClipboard"));
+        return;
+      } catch (err) {
+        console.warn(`${MODULE_ID} | clipboard write failed, falling back:`, err);
+      }
+    }
+
+    // Fallback: open image in new tab so the user can right-click → Copy Image
+    const dataUrl = this._canvas.toDataURL("image/png");
+    const win = window.open();
+    if (win) {
+      win.document.write(
+        `<img src="${dataUrl}" style="max-width:100%;background:#888"
+              title="Rechtsklick -> Bild kopieren / Right-click -> Copy Image">`
+      );
+      ui.notifications.info(game.i18n.localize("FOUNDRYDRAW.Actions.CopyFallback"));
+    } else {
       ui.notifications.warn(game.i18n.localize("FOUNDRYDRAW.Actions.CopyFailed"));
-      console.error(`${MODULE_ID} | clipboard copy failed:`, err);
     }
   }
 

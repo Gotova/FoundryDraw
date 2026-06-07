@@ -17,7 +17,8 @@
       "ClearConfirm": "Wirklich alles loeschen?",
       "CopyClipboard": "In Zwischenablage kopieren",
       "CopiedClipboard": "Bild in Zwischenablage kopiert!",
-      "CopyFailed": "Zwischenablage nicht verfuegbar (HTTPS erforderlich)",
+      "CopyFallback": "Bild im neuen Tab geoeffnet - Rechtsklick -> Bild kopieren",
+      "CopyFailed": "Konnte kein neues Fenster oeffnen. Bitte 'Als PNG speichern' verwenden.",
       "Save": "Als PNG speichern"
     },
     "Settings": {

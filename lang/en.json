@@ -17,7 +17,8 @@
       "ClearConfirm": "Really clear everything?",
       "CopyClipboard": "Copy to Clipboard",
       "CopiedClipboard": "Image copied to clipboard!",
-      "CopyFailed": "Clipboard unavailable (HTTPS required)",
+      "CopyFallback": "Image opened in new tab - right-click to Copy Image",
+      "CopyFailed": "Could not open new window. Please use Save as PNG instead.",
       "Save": "Save as PNG"
     },
     "Settings": {
