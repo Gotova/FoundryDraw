@@ -22,11 +22,10 @@ class FoundryDrawApp extends Application {
     this._startY     = 0;
 
     this._tool       = "brush";
-    this._color      = "#000000";    // default: black
+    this._color      = "#030821";
     this._brushSize  = 8;
     this._opacity    = 1.0;
-    this._symmetry   = 1;            // default: none
-    this._background = "parchment";  // default: parchment
+    this._symmetry   = 1;
     this._keyHandler = null;
   }
 
@@ -71,7 +70,7 @@ class FoundryDrawApp extends Application {
   <div class="separator"></div>
 
   <div class="fd-color-btn" title="${i18n("Settings.Color")}">
-    <input type="color" id="fd-color-picker" value="${this._color}">
+    <input type="color" id="fd-color-picker" value="#030821">
   </div>
 
   <div class="separator"></div>
@@ -102,16 +101,6 @@ class FoundryDrawApp extends Application {
     </select>
   </div>
 
-  <div class="fd-slider-group">
-    <label>${i18n("Settings.Background")}</label>
-    <select class="fd-select" id="fd-background">
-      <option value="parchment" selected>${i18n("Settings.BgParchment")}</option>
-      <option value="black">${i18n("Settings.BgBlack")}</option>
-      <option value="white">${i18n("Settings.BgWhite")}</option>
-      <option value="transparent">${i18n("Settings.BgTransparent")}</option>
-    </select>
-  </div>
-
   <div class="separator"></div>
 
   <button class="fd-tool-btn" id="fd-undo"      data-tooltip="${i18n("Actions.Undo")}">
@@ -135,6 +124,7 @@ class FoundryDrawApp extends Application {
 <div class="foundrydraw-canvas-wrap" id="fd-canvas-wrap">
   <canvas id="foundrydraw-canvas"></canvas>
   <canvas id="foundrydraw-overlay"></canvas>
+  <div id="fd-center-marker" title="${i18n("Settings.SymmetryCenter")}"><span></span></div>
 </div>
 
 <div class="foundrydraw-status">
@@ -193,6 +183,15 @@ class FoundryDrawApp extends Application {
       if (e.ctrlKey && e.key === "y")       { e.preventDefault(); e.stopPropagation(); this._redo();  return; }
     };
     document.addEventListener("keydown", this._keyHandler, true);
+  }
+
+  /* Foundry calls setPosition whenever the window is dragged or resized.
+     We hook it to synchronise the canvas dimensions. */
+  setPosition(pos = {}) {
+    const result = super.setPosition(pos);
+    // Defer so Foundry has time to apply the new inline style first
+    requestAnimationFrame(() => this._onResize());
+    return result;
   }
 
   async close(options = {}) {
@@ -263,27 +262,19 @@ class FoundryDrawApp extends Application {
     ctx.globalAlpha = 1.0;
     ctx.globalCompositeOperation = "source-over";
 
-    if (this._background === "transparent") {
-      ctx.clearRect(0, 0, width, height);
+    // Parchment base
+    ctx.fillStyle = "#e8d5a3";
+    ctx.fillRect(0, 0, width, height);
 
-    } else if (this._background === "parchment") {
-      // Base parchment tone
-      ctx.fillStyle = "#e8d5a3";
-      ctx.fillRect(0, 0, width, height);
-      // Subtle warm-tinted vignette toward the edges
-      const vignette = ctx.createRadialGradient(
-        width / 2, height / 2, Math.min(width, height) * 0.25,
-        width / 2, height / 2, Math.max(width, height) * 0.8
-      );
-      vignette.addColorStop(0, "rgba(0,0,0,0)");
-      vignette.addColorStop(1, "rgba(60,30,0,0.2)");
-      ctx.fillStyle = vignette;
-      ctx.fillRect(0, 0, width, height);
-
-    } else {
-      ctx.fillStyle = this._background;
-      ctx.fillRect(0, 0, width, height);
-    }
+    // Subtle warm vignette toward the edges
+    const vignette = ctx.createRadialGradient(
+      width / 2, height / 2, Math.min(width, height) * 0.25,
+      width / 2, height / 2, Math.max(width, height) * 0.8
+    );
+    vignette.addColorStop(0, "rgba(0,0,0,0)");
+    vignette.addColorStop(1, "rgba(60,30,0,0.2)");
+    ctx.fillStyle = vignette;
+    ctx.fillRect(0, 0, width, height);
   }
 
   /* ──────────────────────────────────────────────
@@ -315,14 +306,6 @@ class FoundryDrawApp extends Application {
 
     html.find("#fd-symmetry").on("change", (e) => {
       this._symmetry = parseInt(e.currentTarget.value);
-    });
-
-    html.find("#fd-background").on("change", (e) => {
-      this._background = e.currentTarget.value;
-      this._saveHistory();
-      this._redoStack = [];
-      this._fillBackground();
-      this._updateHistoryInfo();
     });
 
     html.find("#fd-undo").on("click", () => this._undo());

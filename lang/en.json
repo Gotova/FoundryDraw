@@ -32,11 +32,7 @@
       "Symmetry6": "6-fold",
       "Symmetry8": "8-fold",
       "Symmetry12": "12-fold",
-      "Background": "Background",
-      "BgParchment": "Parchment",
-      "BgBlack": "Black",
-      "BgWhite": "White",
-      "BgTransparent": "Transparent"
+      "SymmetryCenter": "Symmetry center point"
     }
   }
 }

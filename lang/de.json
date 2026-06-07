@@ -32,11 +32,7 @@
       "Symmetry6": "6-fach",
       "Symmetry8": "8-fach",
       "Symmetry12": "12-fach",
-      "Background": "Hintergrund",
-      "BgParchment": "Pergament",
-      "BgBlack": "Schwarz",
-      "BgWhite": "Weiss",
-      "BgTransparent": "Transparent"
+      "SymmetryCenter": "Symmetrie-Mittelpunkt"
     }
   }
 }

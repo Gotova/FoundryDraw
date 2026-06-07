@@ -7,8 +7,6 @@
   flex-direction: column;
   overflow: hidden;
   background: #2c2416;
-  /* fill the window frame so flex children can grow */
-  height: 100%;
 }
 
 /* ───── Toolbar ───── */
@@ -157,14 +155,12 @@
 
 /* ───── Canvas Area ───── */
 .foundrydraw-canvas-wrap {
-  /* grow to fill remaining height, never collapse below 400px */
   flex: 1 1 0;
   min-height: 400px;
   min-width: 720px;
   position: relative;
   overflow: hidden;
-  /* parchment colour for the transparent-bg mode */
-  background: #c8a96e;
+  background: #e8d5a3;
 }
 
 /*
@@ -192,6 +188,55 @@
 /* Cursor overrides per tool */
 .foundrydraw-canvas-wrap.tool-eraser #foundrydraw-canvas { cursor: cell; }
 .foundrydraw-canvas-wrap.tool-fill   #foundrydraw-canvas { cursor: copy; }
+
+/* ───── Symmetry centre marker ───── */
+#fd-center-marker {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 20;
+}
+
+/* Horizontal arm */
+#fd-center-marker::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: -10px;
+  width: 20px;
+  height: 1px;
+  background: rgba(3, 8, 33, 0.45);
+  transform: translateY(-50%);
+}
+
+/* Vertical arm */
+#fd-center-marker::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -10px;
+  width: 1px;
+  height: 20px;
+  background: rgba(3, 8, 33, 0.45);
+  transform: translateX(-50%);
+}
+
+/* Small dot in the very centre via box-shadow on ::before */
+/* We use a separate box on the marker itself */
+#fd-center-marker span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(3, 8, 33, 0.55);
+  transform: translate(-50%, -50%);
+}
 
 /* ───── Status bar ───── */
 .foundrydraw-status {
