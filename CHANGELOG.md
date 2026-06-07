@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.3 - 2026-06-08
+- (Bitte Aenderungen hier eintragen)
+
+
 ## 1.3.2 - 2026-06-08
 - Change: Canvas area height is now fixed at 600 px instead of dynamic (removed unreliable flex/JS height calculation)
 
