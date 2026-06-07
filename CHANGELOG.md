@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.4 - 2026-06-08
+- (Bitte Aenderungen hier eintragen)
+
+
 ## 1.3.3 - 2026-06-08
 - Fix: Empty space above toolbar removed — override Foundry's body.game flex:none rule on .window-content children with matching specificity + padding:0 !important
 - Change: Default brush size reduced from 8 px to 4 px
