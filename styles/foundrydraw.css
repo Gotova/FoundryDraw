@@ -1,19 +1,5 @@
 /* FoundryDraw - Magic Circle Painter */
 
-#foundrydraw-btn {
-  order: -1;
-}
-
-#foundrydraw-btn i {
-  color: #a855f7;
-  transition: color 0.2s, text-shadow 0.2s;
-}
-
-#foundrydraw-btn:hover i {
-  color: #c084fc;
-  text-shadow: 0 0 8px #a855f7;
-}
-
 /* ───── Application Window ───── */
 .foundrydraw-app .window-content {
   padding: 0;

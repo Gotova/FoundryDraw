@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.1 – 2026-06-08
+- Fix: Button now correctly appears in Foundry VTT v13 scene controls
+- v13 Breaking Change: `getSceneControlButtons` hook now receives a keyed object instead of an array
+- v13 Breaking Change: button callback is `onChange` instead of `onClick`
+- Removed fragile DOM injection fallback (no longer needed)
+
 ## 1.0.0 – 2026-06-07
 - Initial release
 - Brush and eraser tools with adjustable size and opacity

@@ -565,35 +565,26 @@ function openDrawApp() {
   _appInstance.render(true);
 }
 
-/* Inject button into the scene controls sidebar (visible to all players). */
+/*
+ * v13 Breaking Change:
+ *   controls  → plain object  { tokens: { tools: { select: {...}, ... } }, ... }
+ *   callback  → onChange (not onClick)
+ *   button    → button: true  (still works, onChange fires on click)
+ */
 Hooks.on("getSceneControlButtons", (controls) => {
-  // Find the "basic" token controls group or push to the first group
-  const group = controls.find((c) => c.name === "token") ?? controls[0];
-  if (!group) return;
+  // Pick the token group; fall back to the first available group.
+  const group = controls.tokens ?? Object.values(controls)[0];
+  if (!group?.tools) return;
 
-  group.tools.push({
+  group.tools.foundrydraw = {
     name:    "foundrydraw",
     title:   game.i18n.localize("FOUNDRYDRAW.ButtonTitle"),
     icon:    "fas fa-magic",
     button:  true,
     visible: true,
-    onClick: () => openDrawApp(),
-  });
-});
-
-/* Also inject a plain toolbar button next to the scene controls (v13 Players HUD).
-   This fires after the controls are rendered so we add a sibling button. */
-Hooks.on("renderSceneControls", (app, html) => {
-  // Avoid duplicate injection
-  if (html.find("#foundrydraw-btn").length) return;
-
-  const btn = $(`
-    <li id="foundrydraw-btn" class="scene-control" title="${game.i18n.localize("FOUNDRYDRAW.ButtonTitle")}">
-      <i class="fas fa-magic"></i>
-    </li>
-  `);
-  btn.on("click", () => openDrawApp());
-  html.find("ol.scene-controls, #scene-controls > ol").first().prepend(btn);
+    order:   (Object.keys(group.tools).length + 1) * 10,
+    onChange: () => openDrawApp(),
+  };
 });
 
 /* Cleanup keyboard listeners when app closes */
