@@ -165,6 +165,9 @@ class FoundryDrawApp extends Application {
 
     this._resizeObserver = new ResizeObserver(() => this._onResize());
     this._resizeObserver.observe(this._wrap);
+    // Also observe .window-content so Foundry's height changes (setPosition) are caught
+    const windowContent = this._wrap.parentElement;
+    if (windowContent) this._resizeObserver.observe(windowContent);
 
     // Keyboard shortcuts – capture phase so Foundry's own handlers don't swallow them
     this._keyHandler = (e) => {
@@ -234,14 +237,19 @@ class FoundryDrawApp extends Application {
     if (w <= 0 || h <= 0) return;
     if (this._canvas.width === w && this._canvas.height === h) return;
 
-    // Grow the backing canvas first if the window just got larger
+    // Grow the backing canvas first if the window just got larger than ever.
+    // _expandBacking keeps existing content CENTRED in the new (larger) backing.
     this._expandBacking(w, h);
 
     // Resize the display canvas (this clears it)
     this._applyCanvasSize(w, h);
 
-    // Restore from the backing canvas – never loses content
-    this._ctx.drawImage(this._back, 0, 0);
+    // Restore from the backing canvas, centred so the drawing stays pinned
+    // to the symmetry point (canvas centre) regardless of window size.
+    const ox = Math.round((this._back.width  - w) / 2);
+    const oy = Math.round((this._back.height - h) / 2);
+    this._fillBackground();
+    this._ctx.drawImage(this._back, -ox, -oy);
   }
 
   /* ──────────────────────────────────────────────
@@ -262,13 +270,20 @@ class FoundryDrawApp extends Application {
     this._saveHistory();
   }
 
-  /* Copy the display canvas into the backing canvas at (0,0). */
+  /* Copy the display canvas into the backing canvas, CENTRED.
+     The backing may be larger than the display (it never shrinks), so we
+     offset by half the size difference so that both share the same centre
+     point – which is where the symmetry crosshair sits. */
   _syncToBacking() {
     if (!this._back) return;
-    this._backCtx.drawImage(this._canvas, 0, 0);
+    const ox = Math.round((this._back.width  - this._canvas.width)  / 2);
+    const oy = Math.round((this._back.height - this._canvas.height) / 2);
+    this._backCtx.drawImage(this._canvas, ox, oy);
   }
 
-  /* Grow the backing canvas when the display grows larger than it has ever been. */
+  /* Grow the backing canvas when the display grows larger than it has ever been.
+     Old content is placed CENTRED inside the new (larger) backing so the
+     drawing centre stays aligned with the symmetry point. */
   _expandBacking(w, h) {
     if (w <= this._back.width && h <= this._back.height) return;
     const newW = Math.max(this._back.width, w);
@@ -283,7 +298,7 @@ class FoundryDrawApp extends Application {
     this._back.width  = newW;
     this._back.height = newH;
 
-    // Fill entire new backing with parchment, then restore old content
+    // Fill entire new backing with parchment
     const ctx = this._backCtx;
     ctx.globalAlpha = 1.0;
     ctx.globalCompositeOperation = "source-over";
@@ -297,7 +312,11 @@ class FoundryDrawApp extends Application {
     vig.addColorStop(1, "rgba(60,30,0,0.2)");
     ctx.fillStyle = vig;
     ctx.fillRect(0, 0, newW, newH);
-    ctx.drawImage(tmp, 0, 0);
+
+    // Restore old content CENTRED so the drawing centre doesn't shift
+    const offsetX = Math.round((newW - tmp.width)  / 2);
+    const offsetY = Math.round((newH - tmp.height) / 2);
+    ctx.drawImage(tmp, offsetX, offsetY);
   }
 
   _fillBackground() {

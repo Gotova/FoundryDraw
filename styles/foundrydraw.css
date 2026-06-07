@@ -1,7 +1,22 @@
 /* FoundryDraw - Magic Circle Painter */
 
 /* ───── Application Window ───── */
+
+/* Make the outer window frame a flex column so .window-content can fill height */
+.foundrydraw-app.window-app {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.foundrydraw-app .window-header {
+  flex-shrink: 0;
+}
+
 .foundrydraw-app .window-content {
+  /* flex: 1 fills remaining height inside the window frame */
+  flex: 1;
+  min-height: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
@@ -162,8 +177,8 @@
 
 /* ───── Canvas Area ───── */
 .foundrydraw-canvas-wrap {
-  flex: 1 1 0;
-  min-height: 400px;
+  flex: 1;
+  min-height: 0;   /* allow the flex child to shrink below content-size */
   min-width: 720px;
   position: relative;
   overflow: hidden;
