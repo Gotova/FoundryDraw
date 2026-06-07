@@ -1,25 +1,27 @@
 {
   "FOUNDRYDRAW": {
     "ButtonTitle": "Draw Magic Circle",
-    "WindowTitle": "FoundryDraw – Magic Circle",
+    "WindowTitle": "FoundryDraw - Magic Circle",
     "Tools": {
       "Brush": "Brush",
       "Eraser": "Eraser",
       "Line": "Line",
       "Circle": "Circle",
       "Rectangle": "Rectangle",
-      "Fill": "Fill",
-      "Select": "Select"
+      "Fill": "Fill"
     },
     "Actions": {
-      "Undo": "Undo",
-      "Redo": "Redo",
+      "Undo": "Undo (Ctrl+Z)",
+      "Redo": "Redo (Ctrl+Y)",
       "Clear": "Clear All",
-      "Save": "Save as Image",
-      "ClearConfirm": "Really clear everything?"
+      "ClearConfirm": "Really clear everything?",
+      "CopyClipboard": "Copy to Clipboard",
+      "CopiedClipboard": "Image copied to clipboard!",
+      "CopyFailed": "Clipboard unavailable (HTTPS required)",
+      "Save": "Save as PNG"
     },
     "Settings": {
-      "BrushSize": "Brush Size",
+      "BrushSize": "Brush",
       "Opacity": "Opacity",
       "Color": "Color",
       "Symmetry": "Symmetry",
@@ -30,6 +32,7 @@
       "Symmetry8": "8-fold",
       "Symmetry12": "12-fold",
       "Background": "Background",
+      "BgParchment": "Parchment",
       "BgBlack": "Black",
       "BgWhite": "White",
       "BgTransparent": "Transparent"

@@ -1,25 +1,27 @@
 {
   "FOUNDRYDRAW": {
     "ButtonTitle": "Magiekreis zeichnen",
-    "WindowTitle": "FoundryDraw – Magiekreis",
+    "WindowTitle": "FoundryDraw - Magiekreis",
     "Tools": {
       "Brush": "Pinsel",
       "Eraser": "Radiergummi",
       "Line": "Linie",
       "Circle": "Kreis",
       "Rectangle": "Rechteck",
-      "Fill": "Füllen",
-      "Select": "Auswahl"
+      "Fill": "Fuellen"
     },
     "Actions": {
-      "Undo": "Rückgängig",
-      "Redo": "Wiederholen",
-      "Clear": "Alles löschen",
-      "Save": "Als Bild speichern",
-      "ClearConfirm": "Wirklich alles löschen?"
+      "Undo": "Rueckgaengig (Ctrl+Z)",
+      "Redo": "Wiederholen (Ctrl+Y)",
+      "Clear": "Alles loeschen",
+      "ClearConfirm": "Wirklich alles loeschen?",
+      "CopyClipboard": "In Zwischenablage kopieren",
+      "CopiedClipboard": "Bild in Zwischenablage kopiert!",
+      "CopyFailed": "Zwischenablage nicht verfuegbar (HTTPS erforderlich)",
+      "Save": "Als PNG speichern"
     },
     "Settings": {
-      "BrushSize": "Pinselgröße",
+      "BrushSize": "Pinsel",
       "Opacity": "Deckkraft",
       "Color": "Farbe",
       "Symmetry": "Symmetrie",
@@ -30,8 +32,9 @@
       "Symmetry8": "8-fach",
       "Symmetry12": "12-fach",
       "Background": "Hintergrund",
+      "BgParchment": "Pergament",
       "BgBlack": "Schwarz",
-      "BgWhite": "Weiß",
+      "BgWhite": "Weiss",
       "BgTransparent": "Transparent"
     }
   }

@@ -1,5 +1,5 @@
 /**
- * FoundryDraw – Magic Circle Painter
+ * FoundryDraw - Magic Circle Painter
  * A drawing canvas for painting magic circles in Foundry VTT v13.
  */
 
@@ -13,31 +13,28 @@ class FoundryDrawApp extends Application {
   constructor(options = {}) {
     super(options);
 
-    // Canvas state
-    this._history    = [];   // undo stack (ImageData snapshots)
+    this._history    = [];
     this._redoStack  = [];
     this._drawing    = false;
     this._lastX      = 0;
     this._lastY      = 0;
-    this._startX     = 0;   // for shape tools
+    this._startX     = 0;
     this._startY     = 0;
 
-    // Tool state
     this._tool       = "brush";
-    this._color      = "#a855f7";
+    this._color      = "#000000";    // default: black
     this._brushSize  = 8;
     this._opacity    = 1.0;
-    this._symmetry   = 1;    // number of rotational segments
-    this._background = "black";
+    this._symmetry   = 1;            // default: none
+    this._background = "parchment";  // default: parchment
+    this._keyHandler = null;
   }
-
-  /* ── Application boilerplate ── */
 
   static get defaultOptions() {
     return foundry.utils.mergeObject(super.defaultOptions, {
       id:          "foundrydraw-app",
       title:       game.i18n.localize("FOUNDRYDRAW.WindowTitle"),
-      template:    null,          // we build HTML ourselves
+      template:    null,
       classes:     ["foundrydraw-app"],
       width:       820,
       height:      640,
@@ -46,50 +43,45 @@ class FoundryDrawApp extends Application {
     });
   }
 
-  /* Build the inner HTML without a Handlebars template so we stay dependency-free. */
   async _renderInner() {
     const i18n = (k) => game.i18n.localize(`FOUNDRYDRAW.${k}`);
 
     const html = `
 <div class="foundrydraw-toolbar">
 
-  <!-- Tool group -->
-  <button class="fd-tool-btn active" data-tool="brush"   data-tooltip="${i18n("Tools.Brush")}">
+  <button class="fd-tool-btn active" data-tool="brush"  data-tooltip="${i18n("Tools.Brush")}">
     <i class="fas fa-paint-brush"></i>
   </button>
-  <button class="fd-tool-btn" data-tool="eraser"  data-tooltip="${i18n("Tools.Eraser")}">
+  <button class="fd-tool-btn" data-tool="eraser"        data-tooltip="${i18n("Tools.Eraser")}">
     <i class="fas fa-eraser"></i>
   </button>
-  <button class="fd-tool-btn" data-tool="line"    data-tooltip="${i18n("Tools.Line")}">
+  <button class="fd-tool-btn" data-tool="line"          data-tooltip="${i18n("Tools.Line")}">
     <i class="fas fa-minus"></i>
   </button>
-  <button class="fd-tool-btn" data-tool="circle"  data-tooltip="${i18n("Tools.Circle")}">
+  <button class="fd-tool-btn" data-tool="circle"        data-tooltip="${i18n("Tools.Circle")}">
     <i class="fas fa-circle-notch"></i>
   </button>
-  <button class="fd-tool-btn" data-tool="rect"    data-tooltip="${i18n("Tools.Rectangle")}">
+  <button class="fd-tool-btn" data-tool="rect"          data-tooltip="${i18n("Tools.Rectangle")}">
     <i class="fas fa-square"></i>
   </button>
-  <button class="fd-tool-btn" data-tool="fill"    data-tooltip="${i18n("Tools.Fill")}">
+  <button class="fd-tool-btn" data-tool="fill"          data-tooltip="${i18n("Tools.Fill")}">
     <i class="fas fa-fill-drip"></i>
   </button>
 
   <div class="separator"></div>
 
-  <!-- Color -->
-  <div class="fd-color-btn" data-tooltip="${i18n("Settings.Color")}" title="${i18n("Settings.Color")}">
+  <div class="fd-color-btn" title="${i18n("Settings.Color")}">
     <input type="color" id="fd-color-picker" value="${this._color}">
   </div>
 
   <div class="separator"></div>
 
-  <!-- Brush size -->
   <div class="fd-slider-group">
     <label>${i18n("Settings.BrushSize")}</label>
     <input type="range" id="fd-brush-size" min="1" max="80" value="${this._brushSize}">
     <span class="fd-val" id="fd-brush-size-val">${this._brushSize}</span>
   </div>
 
-  <!-- Opacity -->
   <div class="fd-slider-group">
     <label>${i18n("Settings.Opacity")}</label>
     <input type="range" id="fd-opacity" min="1" max="100" value="${Math.round(this._opacity * 100)}">
@@ -98,24 +90,23 @@ class FoundryDrawApp extends Application {
 
   <div class="separator"></div>
 
-  <!-- Symmetry -->
   <div class="fd-slider-group">
     <label>${i18n("Settings.Symmetry")}</label>
     <select class="fd-select" id="fd-symmetry">
-      <option value="1">${i18n("Settings.SymmetryNone")}</option>
+      <option value="1"  selected>${i18n("Settings.SymmetryNone")}</option>
       <option value="2">${i18n("Settings.Symmetry2")}</option>
       <option value="4">${i18n("Settings.Symmetry4")}</option>
-      <option value="6" selected>${i18n("Settings.Symmetry6")}</option>
+      <option value="6">${i18n("Settings.Symmetry6")}</option>
       <option value="8">${i18n("Settings.Symmetry8")}</option>
       <option value="12">${i18n("Settings.Symmetry12")}</option>
     </select>
   </div>
 
-  <!-- Background -->
   <div class="fd-slider-group">
     <label>${i18n("Settings.Background")}</label>
     <select class="fd-select" id="fd-background">
-      <option value="black" selected>${i18n("Settings.BgBlack")}</option>
+      <option value="parchment" selected>${i18n("Settings.BgParchment")}</option>
+      <option value="black">${i18n("Settings.BgBlack")}</option>
       <option value="white">${i18n("Settings.BgWhite")}</option>
       <option value="transparent">${i18n("Settings.BgTransparent")}</option>
     </select>
@@ -123,25 +114,27 @@ class FoundryDrawApp extends Application {
 
   <div class="separator"></div>
 
-  <!-- History -->
-  <button class="fd-tool-btn" id="fd-undo" data-tooltip="${i18n("Actions.Undo")}">
+  <button class="fd-tool-btn" id="fd-undo"      data-tooltip="${i18n("Actions.Undo")}">
     <i class="fas fa-undo"></i>
   </button>
-  <button class="fd-tool-btn" id="fd-redo" data-tooltip="${i18n("Actions.Redo")}">
+  <button class="fd-tool-btn" id="fd-redo"      data-tooltip="${i18n("Actions.Redo")}">
     <i class="fas fa-redo"></i>
   </button>
-  <button class="fd-tool-btn" id="fd-clear" data-tooltip="${i18n("Actions.Clear")}">
+  <button class="fd-tool-btn" id="fd-clear"     data-tooltip="${i18n("Actions.Clear")}">
     <i class="fas fa-trash"></i>
   </button>
-  <button class="fd-tool-btn" id="fd-save" data-tooltip="${i18n("Actions.Save")}">
+  <button class="fd-tool-btn" id="fd-clipboard" data-tooltip="${i18n("Actions.CopyClipboard")}">
+    <i class="fas fa-clipboard"></i>
+  </button>
+  <button class="fd-tool-btn" id="fd-save"      data-tooltip="${i18n("Actions.Save")}">
     <i class="fas fa-download"></i>
   </button>
 
 </div>
 
 <div class="foundrydraw-canvas-wrap" id="fd-canvas-wrap">
-  <canvas id="foundrydraw-canvas" width="700" height="500"></canvas>
-  <canvas id="foundrydraw-overlay" width="700" height="500"></canvas>
+  <canvas id="foundrydraw-canvas"></canvas>
+  <canvas id="foundrydraw-overlay"></canvas>
 </div>
 
 <div class="foundrydraw-status">
@@ -149,7 +142,6 @@ class FoundryDrawApp extends Application {
   <span id="fd-history-info">Undo: 0</span>
 </div>`;
 
-    // ApplicationV1 expects a jQuery object as the inner content
     return $(html);
   }
 
@@ -164,16 +156,78 @@ class FoundryDrawApp extends Application {
     this._octx    = this._overlay.getContext("2d");
     this._wrap    = html.find("#fd-canvas-wrap")[0];
 
-    this._initCanvas();
+    // Size canvas to fill the container after the DOM has laid out
+    requestAnimationFrame(() => {
+      this._resizeCanvasToWrap();
+      this._initCanvas();
+    });
+
     this._bindControls(html);
     this._bindCanvasEvents();
+
     this._resizeObserver = new ResizeObserver(() => this._onResize());
     this._resizeObserver.observe(this._wrap);
+
+    // Keyboard shortcuts – capture phase so Foundry's own handlers don't swallow them
+    this._keyHandler = (e) => {
+      if (!this.rendered) return;
+      // Don't steal shortcuts when the user is typing in an input field
+      const focused = document.activeElement;
+      if (focused && (
+        focused.tagName === "INPUT" ||
+        focused.tagName === "TEXTAREA" ||
+        focused.isContentEditable
+      )) return;
+
+      const isZ = e.key === "z" || e.key === "Z";
+      if (e.ctrlKey && isZ && !e.shiftKey) { e.preventDefault(); e.stopPropagation(); this._undo();  return; }
+      if (e.ctrlKey && isZ &&  e.shiftKey) { e.preventDefault(); e.stopPropagation(); this._redo();  return; }
+      if (e.ctrlKey && e.key === "y")       { e.preventDefault(); e.stopPropagation(); this._redo();  return; }
+    };
+    document.addEventListener("keydown", this._keyHandler, true);
   }
 
   async close(options = {}) {
     if (this._resizeObserver) this._resizeObserver.disconnect();
+    if (this._keyHandler) document.removeEventListener("keydown", this._keyHandler, true);
     return super.close(options);
+  }
+
+  /* ──────────────────────────────────────────────
+     Canvas Sizing
+     ────────────────────────────────────────────── */
+
+  _resizeCanvasToWrap() {
+    const w = this._wrap.clientWidth;
+    const h = this._wrap.clientHeight;
+    if (w <= 0 || h <= 0) return;
+    this._canvas.width   = w;
+    this._canvas.height  = h;
+    this._overlay.width  = w;
+    this._overlay.height = h;
+  }
+
+  _onResize() {
+    if (!this._canvas || !this._overlay) return;
+    const w = this._wrap.clientWidth;
+    const h = this._wrap.clientHeight;
+    if (w <= 0 || h <= 0) return;
+    if (this._canvas.width === w && this._canvas.height === h) return;
+
+    // Preserve current drawing
+    const tmp = document.createElement("canvas");
+    tmp.width  = this._canvas.width;
+    tmp.height = this._canvas.height;
+    tmp.getContext("2d").drawImage(this._canvas, 0, 0);
+
+    this._canvas.width   = w;
+    this._canvas.height  = h;
+    this._overlay.width  = w;
+    this._overlay.height = h;
+
+    // Repaint background then restore drawing on top
+    this._fillBackground();
+    this._ctx.drawImage(tmp, 0, 0);
   }
 
   /* ──────────────────────────────────────────────
@@ -188,20 +242,30 @@ class FoundryDrawApp extends Application {
   _fillBackground() {
     const ctx = this._ctx;
     const { width, height } = this._canvas;
+    ctx.globalAlpha = 1.0;
+    ctx.globalCompositeOperation = "source-over";
+
     if (this._background === "transparent") {
       ctx.clearRect(0, 0, width, height);
+
+    } else if (this._background === "parchment") {
+      // Base parchment tone
+      ctx.fillStyle = "#e8d5a3";
+      ctx.fillRect(0, 0, width, height);
+      // Subtle warm-tinted vignette toward the edges
+      const vignette = ctx.createRadialGradient(
+        width / 2, height / 2, Math.min(width, height) * 0.25,
+        width / 2, height / 2, Math.max(width, height) * 0.8
+      );
+      vignette.addColorStop(0, "rgba(0,0,0,0)");
+      vignette.addColorStop(1, "rgba(60,30,0,0.2)");
+      ctx.fillStyle = vignette;
+      ctx.fillRect(0, 0, width, height);
+
     } else {
       ctx.fillStyle = this._background;
       ctx.fillRect(0, 0, width, height);
     }
-  }
-
-  _onResize() {
-    // Keep overlay aligned with canvas
-    if (!this._canvas || !this._overlay) return;
-    const rect = this._canvas.getBoundingClientRect();
-    this._overlay.style.left = this._canvas.offsetLeft + "px";
-    this._overlay.style.top  = this._canvas.offsetTop  + "px";
   }
 
   /* ──────────────────────────────────────────────
@@ -209,7 +273,6 @@ class FoundryDrawApp extends Application {
      ────────────────────────────────────────────── */
 
   _bindControls(html) {
-    // Tool buttons
     html.find(".fd-tool-btn[data-tool]").on("click", (e) => {
       const btn = e.currentTarget;
       html.find(".fd-tool-btn[data-tool]").removeClass("active");
@@ -218,43 +281,35 @@ class FoundryDrawApp extends Application {
       this._wrap.className = `foundrydraw-canvas-wrap tool-${this._tool}`;
     });
 
-    // Color
     html.find("#fd-color-picker").on("input", (e) => {
       this._color = e.currentTarget.value;
     });
 
-    // Brush size
     html.find("#fd-brush-size").on("input", (e) => {
       this._brushSize = parseInt(e.currentTarget.value);
       html.find("#fd-brush-size-val").text(this._brushSize);
     });
 
-    // Opacity
     html.find("#fd-opacity").on("input", (e) => {
       this._opacity = parseInt(e.currentTarget.value) / 100;
       html.find("#fd-opacity-val").text(`${Math.round(this._opacity * 100)}%`);
     });
 
-    // Symmetry
     html.find("#fd-symmetry").on("change", (e) => {
       this._symmetry = parseInt(e.currentTarget.value);
     });
-    this._symmetry = 6; // default
 
-    // Background
     html.find("#fd-background").on("change", (e) => {
       this._background = e.currentTarget.value;
-      const snapshot = this._saveHistory(); // save current drawing
+      this._saveHistory();
+      this._redoStack = [];
       this._fillBackground();
-      // redraw stored drawing on top – just clear and re-fill for simplicity
-      // (background only affects the cleared state, not existing strokes)
+      this._updateHistoryInfo();
     });
 
-    // Undo / Redo
     html.find("#fd-undo").on("click", () => this._undo());
     html.find("#fd-redo").on("click", () => this._redo());
 
-    // Clear
     html.find("#fd-clear").on("click", () => {
       if (!confirm(game.i18n.localize("FOUNDRYDRAW.Actions.ClearConfirm"))) return;
       this._saveHistory();
@@ -263,16 +318,8 @@ class FoundryDrawApp extends Application {
       this._updateHistoryInfo();
     });
 
-    // Save
+    html.find("#fd-clipboard").on("click", () => this._copyToClipboard());
     html.find("#fd-save").on("click", () => this._saveImage());
-
-    // Keyboard shortcuts
-    $(document).on(`keydown.${MODULE_ID}`, (e) => {
-      if (!this._rendered) return;
-      if (e.ctrlKey && e.key === "z") { e.preventDefault(); this._undo(); }
-      if (e.ctrlKey && e.key === "y") { e.preventDefault(); this._redo(); }
-      if (e.ctrlKey && e.shiftKey && e.key === "Z") { e.preventDefault(); this._redo(); }
-    });
   }
 
   /* ──────────────────────────────────────────────
@@ -281,16 +328,15 @@ class FoundryDrawApp extends Application {
 
   _bindCanvasEvents() {
     const el = this._canvas;
-
-    el.addEventListener("pointerdown", (e) => this._onPointerDown(e));
-    el.addEventListener("pointermove", (e) => this._onPointerMove(e));
-    el.addEventListener("pointerup",   (e) => this._onPointerUp(e));
-    el.addEventListener("pointerleave",(e) => { if (this._drawing) this._onPointerUp(e); });
-    el.addEventListener("mousemove",   (e) => this._updateCoords(e));
+    el.addEventListener("pointerdown",  (e) => this._onPointerDown(e));
+    el.addEventListener("pointermove",  (e) => this._onPointerMove(e));
+    el.addEventListener("pointerup",    (e) => this._onPointerUp(e));
+    el.addEventListener("pointerleave", (e) => { if (this._drawing) this._onPointerUp(e); });
+    el.addEventListener("mousemove",    (e) => this._updateCoords(e));
   }
 
   _canvasPoint(e) {
-    const rect = this._canvas.getBoundingClientRect();
+    const rect   = this._canvas.getBoundingClientRect();
     const scaleX = this._canvas.width  / rect.width;
     const scaleY = this._canvas.height / rect.height;
     return {
@@ -300,7 +346,7 @@ class FoundryDrawApp extends Application {
   }
 
   _updateCoords(e) {
-    const p = this._canvasPoint(e);
+    const p  = this._canvasPoint(e);
     const el = document.getElementById("fd-coords");
     if (el) el.textContent = `x: ${Math.round(p.x)}  y: ${Math.round(p.y)}`;
   }
@@ -334,7 +380,6 @@ class FoundryDrawApp extends Application {
       this._lastX = p.x;
       this._lastY = p.y;
     } else {
-      // Shape preview on overlay
       this._octx.clearRect(0, 0, this._overlay.width, this._overlay.height);
       this._drawShape(this._octx, this._startX, this._startY, p.x, p.y);
     }
@@ -357,13 +402,13 @@ class FoundryDrawApp extends Application {
      ────────────────────────────────────────────── */
 
   _applyBrushStyle(ctx, eraser = false) {
-    ctx.globalAlpha = eraser ? 1.0 : this._opacity;
+    ctx.globalAlpha              = eraser ? 1.0 : this._opacity;
     ctx.globalCompositeOperation = eraser ? "destination-out" : "source-over";
-    ctx.strokeStyle = this._color;
-    ctx.fillStyle   = this._color;
-    ctx.lineWidth   = this._brushSize;
-    ctx.lineCap     = "round";
-    ctx.lineJoin    = "round";
+    ctx.strokeStyle              = this._color;
+    ctx.fillStyle                = this._color;
+    ctx.lineWidth                = this._brushSize;
+    ctx.lineCap                  = "round";
+    ctx.lineJoin                 = "round";
   }
 
   _dot(x, y) {
@@ -378,15 +423,12 @@ class FoundryDrawApp extends Application {
 
   _stroke(x1, y1, x2, y2) {
     this._withSymmetry(x1, y1, (cx, cy, tx1, ty1) => {
-      // mirror x2/y2 the same way
-      const dx = x2 - cx, dy = y2 - cy;
-      // The symmetry transform that was applied to (x1,y1) → (tx1,ty1)
-      // We derive the rotation angle from the difference
-      const origAngle = Math.atan2(ty1 - cy, tx1 - cx);
-      const newAngle  = Math.atan2(dy, dx) + (origAngle - Math.atan2(y1 - cy, x1 - cx));
-      const r2 = Math.hypot(dx, dy);
-      const tx2 = cx + r2 * Math.cos(newAngle);
-      const ty2 = cy + r2 * Math.sin(newAngle);
+      const dx         = x2 - cx, dy = y2 - cy;
+      const origAngle  = Math.atan2(ty1 - cy, tx1 - cx);
+      const newAngle   = Math.atan2(dy, dx) + (origAngle - Math.atan2(y1 - cy, x1 - cx));
+      const r2         = Math.hypot(dx, dy);
+      const tx2        = cx + r2 * Math.cos(newAngle);
+      const ty2        = cy + r2 * Math.sin(newAngle);
 
       const ctx = this._ctx;
       this._applyBrushStyle(ctx, this._tool === "eraser");
@@ -397,41 +439,38 @@ class FoundryDrawApp extends Application {
     });
   }
 
-  /** Calls callback for each symmetry segment, passing (centerX, centerY, transformedX, transformedY). */
   _withSymmetry(x, y, fn) {
-    const cx = this._canvas.width  / 2;
-    const cy = this._canvas.height / 2;
-    const dx = x - cx, dy = y - cy;
+    const cx        = this._canvas.width  / 2;
+    const cy        = this._canvas.height / 2;
+    const dx        = x - cx, dy = y - cy;
     const baseAngle = Math.atan2(dy, dx);
-    const r = Math.hypot(dx, dy);
-    const step = (Math.PI * 2) / this._symmetry;
+    const r         = Math.hypot(dx, dy);
+    const step      = (Math.PI * 2) / this._symmetry;
     for (let i = 0; i < this._symmetry; i++) {
       const angle = baseAngle + step * i;
-      const tx = cx + r * Math.cos(angle);
-      const ty = cy + r * Math.sin(angle);
-      fn(cx, cy, tx, ty);
+      fn(cx, cy, cx + r * Math.cos(angle), cy + r * Math.sin(angle));
     }
   }
 
   _drawShape(ctx, x1, y1, x2, y2) {
     const isOverlay = ctx === this._octx;
-    if (!isOverlay) this._applyBrushStyle(ctx, false);
-    else {
+    if (!isOverlay) {
+      this._applyBrushStyle(ctx, false);
+    } else {
       ctx.globalAlpha = this._opacity;
       ctx.strokeStyle = this._color;
-      ctx.fillStyle   = this._color;
       ctx.lineWidth   = this._brushSize;
       ctx.lineCap     = "round";
       ctx.lineJoin    = "round";
     }
 
-    const cx = this._canvas.width  / 2;
-    const cy = this._canvas.height / 2;
+    const cx   = this._canvas.width  / 2;
+    const cy   = this._canvas.height / 2;
     const step = (Math.PI * 2) / this._symmetry;
-    const dx1 = x1 - cx, dy1 = y1 - cy;
-    const dx2 = x2 - cx, dy2 = y2 - cy;
-    const r1 = Math.hypot(dx1, dy1), r2 = Math.hypot(dx2, dy2);
-    const a1 = Math.atan2(dy1, dx1), a2 = Math.atan2(dy2, dx2);
+    const dx1  = x1 - cx, dy1 = y1 - cy;
+    const dx2  = x2 - cx, dy2 = y2 - cy;
+    const r1   = Math.hypot(dx1, dy1), r2 = Math.hypot(dx2, dy2);
+    const a1   = Math.atan2(dy1, dx1),  a2 = Math.atan2(dy2, dx2);
 
     for (let i = 0; i < this._symmetry; i++) {
       const rot = step * i;
@@ -448,9 +487,7 @@ class FoundryDrawApp extends Application {
       } else if (this._tool === "circle") {
         const rx = Math.abs(sx2 - sx1) / 2;
         const ry = Math.abs(sy2 - sy1) / 2;
-        const ex = (sx1 + sx2) / 2;
-        const ey = (sy1 + sy2) / 2;
-        ctx.ellipse(ex, ey, rx || 1, ry || 1, 0, 0, Math.PI * 2);
+        ctx.ellipse((sx1 + sx2) / 2, (sy1 + sy2) / 2, rx || 1, ry || 1, 0, 0, Math.PI * 2);
         ctx.stroke();
       } else if (this._tool === "rect") {
         ctx.rect(sx1, sy1, sx2 - sx1, sy2 - sy1);
@@ -464,16 +501,14 @@ class FoundryDrawApp extends Application {
      ────────────────────────────────────────────── */
 
   _floodFill(startX, startY) {
-    const ctx  = this._ctx;
-    const w    = this._canvas.width;
-    const h    = this._canvas.height;
-    const data = ctx.getImageData(0, 0, w, h);
-    const px   = data.data;
-
-    const idx = (x, y) => (y * w + x) * 4;
+    const ctx    = this._ctx;
+    const w      = this._canvas.width;
+    const h      = this._canvas.height;
+    const data   = ctx.getImageData(0, 0, w, h);
+    const px     = data.data;
+    const idx    = (x, y) => (y * w + x) * 4;
     const target = px.slice(idx(startX, startY), idx(startX, startY) + 4);
 
-    // Parse fill color
     const tmp = document.createElement("canvas");
     tmp.width = tmp.height = 1;
     const tc = tmp.getContext("2d");
@@ -482,14 +517,11 @@ class FoundryDrawApp extends Application {
     const fill = tc.getImageData(0, 0, 1, 1).data;
 
     const match = (i) =>
-      px[i]   === target[0] &&
-      px[i+1] === target[1] &&
-      px[i+2] === target[2] &&
-      px[i+3] === target[3];
+      px[i] === target[0] && px[i+1] === target[1] &&
+      px[i+2] === target[2] && px[i+3] === target[3];
 
-    if (match(idx(startX, startY)) &&
-        fill[0] === target[0] && fill[1] === target[1] &&
-        fill[2] === target[2] && fill[3] === target[3]) return;
+    if (fill[0] === target[0] && fill[1] === target[1] &&
+        fill[2] === target[2]) return;
 
     const stack = [[startX, startY]];
     while (stack.length) {
@@ -520,10 +552,8 @@ class FoundryDrawApp extends Application {
 
   _undo() {
     if (this._history.length <= 1) return;
-    const current = this._history.pop();
-    this._redoStack.push(current);
-    const prev = this._history[this._history.length - 1];
-    this._ctx.putImageData(prev, 0, 0);
+    this._redoStack.push(this._history.pop());
+    this._ctx.putImageData(this._history[this._history.length - 1], 0, 0);
     this._updateHistoryInfo();
   }
 
@@ -541,19 +571,30 @@ class FoundryDrawApp extends Application {
   }
 
   /* ──────────────────────────────────────────────
-     Save Image
+     Export
      ────────────────────────────────────────────── */
 
+  async _copyToClipboard() {
+    try {
+      const blob = await new Promise(resolve => this._canvas.toBlob(resolve, "image/png"));
+      await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+      ui.notifications.info(game.i18n.localize("FOUNDRYDRAW.Actions.CopiedClipboard"));
+    } catch (err) {
+      ui.notifications.warn(game.i18n.localize("FOUNDRYDRAW.Actions.CopyFailed"));
+      console.error(`${MODULE_ID} | clipboard copy failed:`, err);
+    }
+  }
+
   _saveImage() {
-    const link = document.createElement("a");
+    const link    = document.createElement("a");
     link.download = `magic-circle-${Date.now()}.png`;
-    link.href = this._canvas.toDataURL("image/png");
+    link.href     = this._canvas.toDataURL("image/png");
     link.click();
   }
 }
 
 /* ──────────────────────────────────────────────
-   Singleton instance + UI button injection
+   Singleton + scene control button
    ────────────────────────────────────────────── */
 
 let _appInstance = null;
@@ -565,14 +606,7 @@ function openDrawApp() {
   _appInstance.render(true);
 }
 
-/*
- * v13 Breaking Change:
- *   controls  → plain object  { tokens: { tools: { select: {...}, ... } }, ... }
- *   callback  → onChange (not onClick)
- *   button    → button: true  (still works, onChange fires on click)
- */
 Hooks.on("getSceneControlButtons", (controls) => {
-  // Pick the token group; fall back to the first available group.
   const group = controls.tokens ?? Object.values(controls)[0];
   if (!group?.tools) return;
 
@@ -585,9 +619,4 @@ Hooks.on("getSceneControlButtons", (controls) => {
     order:   (Object.keys(group.tools).length + 1) * 10,
     onChange: () => openDrawApp(),
   };
-});
-
-/* Cleanup keyboard listeners when app closes */
-Hooks.on("closeFoundryDrawApp", () => {
-  $(document).off(`keydown.${MODULE_ID}`);
 });

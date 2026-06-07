@@ -1,22 +1,32 @@
 # Changelog
 
+## 1.1.0 - 2026-06-08
+- Canvas fills the entire window (resizes automatically when window is resized)
+- Default brush color changed to black
+- Default symmetry changed to none
+- New background option: Parchment (warm fantasy paper look with subtle vignette), now the default
+- New button: Copy to Clipboard (copies canvas as PNG image)
+- Ctrl+Z (Undo) and Ctrl+Y / Ctrl+Shift+Z (Redo) now work reliably via capture-phase listener
+- Toolbar and UI restyled to match parchment/fantasy theme (warm browns and golds)
+- Transparent background now shows a parchment-toned checkerboard
+
 ## 1.0.2 - 2026-06-08
-- Fix: module.json wird jetzt als UTF-8 ohne BOM geschrieben (Foundry Update-Fehler behoben)
-- Fix: release.ps1 schreibt alle Dateien BOM-frei
+- Fix: module.json is now written as UTF-8 without BOM (fixed Foundry update error)
+- Fix: release.ps1 writes all files BOM-free
 
 ## 1.0.1 - 2026-06-08
-- Fix: Button erscheint jetzt korrekt in der Seitenleiste unter Foundry VTT v13
-- v13 Breaking Change: getSceneControlButtons hook erhaelt ein Objekt statt Array
-- v13 Breaking Change: Button-Callback heisst onChange statt onClick
-- Fragile DOM-Injection entfernt
+- Fix: Button now correctly appears in Foundry VTT v13 scene controls
+- v13 Breaking Change: getSceneControlButtons hook receives an object instead of an array
+- v13 Breaking Change: button callback is onChange instead of onClick
+- Removed fragile DOM injection fallback
 
 ## 1.0.0 - 2026-06-07
 - Initial release
 - Brush and eraser tools with adjustable size and opacity
 - Line, circle and rectangle shape tools
 - Flood-fill tool
-- Rotational symmetry (1 / 2 / 4 / 6 / 8 / 12-fold) - perfect for magic circles
-- Undo / Redo (up to 50 steps), keyboard shortcuts Ctrl+Z / Ctrl+Y
+- Rotational symmetry (1 / 2 / 4 / 6 / 8 / 12-fold)
+- Undo / Redo (up to 50 steps)
 - Clear canvas with confirmation
 - Export drawing as PNG
 - Configurable background (black / white / transparent)
