@@ -2,7 +2,7 @@
 
 > Ein Foundry VTT v13 Modul, das allen Spielern und dem GM eine Zeichenflaeche zum Malen von Magiekreisen bereitstellt.
 
-![Version](https://img.shields.io/badge/version-1.0.1-a855f7)
+![Version](https://img.shields.io/badge/version-1.0.2-a855f7)
 ![Foundry VTT](https://img.shields.io/badge/Foundry%20VTT-v13-0f3460)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -144,13 +144,13 @@ Foundry VTT prueft beim Start automatisch, ob eine neue Version verfuegbar ist, 
 Fuer Entwickler oder Selbst-Hoster:
 
 ```powershell
-# Patch-Version erhoehen (1.0.1 -> 1.0.2) und ZIP bauen + GitHub Release erstellen
+# Patch-Version erhoehen und ZIP bauen + GitHub Release erstellen
 .\release.ps1
 
-# Minor-Version erhoehen (1.0.1 -> 1.1.0)
+# Minor-Version erhoehen
 .\release.ps1 -Minor
 
-# Major-Version erhoehen (1.0.1 -> 2.0.0)
+# Major-Version erhoehen
 .\release.ps1 -Major
 ```
 
@@ -160,6 +160,8 @@ Das Script macht alles automatisch:
 3. Baut `foundrydraw.zip`
 4. Git commit + tag + push
 5. Erstellt das GitHub Release mit allen Assets
+
+Alle Dateien werden als **UTF-8 ohne BOM** geschrieben, da Foundry VTT kein BOM in `module.json` akzeptiert.
 
 ---
 

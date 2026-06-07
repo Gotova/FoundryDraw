@@ -1,13 +1,16 @@
 <#
 .SYNOPSIS
-  Baut ein ZIP-Release fuer FoundryDraw, erhoeht die Versionsnummer automatisch,
-  updated README.md und pusht alles als GitHub Release.
+  Baut ein ZIP-Release fuer FoundryDraw, erhoht die Versionsnummer,
+  updatet README.md und pusht alles als GitHub Release.
 
 .USAGE
-  .\release.ps1          # Patch-Version erhoehen (1.0.0 -> 1.0.1)
-  .\release.ps1 -Minor   # Minor-Version erhoehen (1.0.0 -> 1.1.0)
-  .\release.ps1 -Major   # Major-Version erhoehen (1.0.0 -> 2.0.0)
+  .\release.ps1          # Patch-Version erhoehen (z.B. 1.0.2 -> 1.0.3)
+  .\release.ps1 -Minor   # Minor-Version erhoehen (z.B. 1.0.2 -> 1.1.0)
+  .\release.ps1 -Major   # Major-Version erhoehen (z.B. 1.0.2 -> 2.0.0)
   .\release.ps1 -DryRun  # Nur anzeigen, was passieren wuerde
+
+WICHTIG: Schreibt alle JSON/MD-Dateien als UTF-8 OHNE BOM,
+         da Foundry VTT kein BOM in module.json akzeptiert.
 #>
 
 param(
@@ -18,8 +21,25 @@ param(
 
 $ErrorActionPreference = "Stop"
 
+# UTF-8 ohne BOM -- in PowerShell 5.1 gibt es kein "utf8NoBOM",
+# daher nutzen wir System.Text.UTF8Encoding direkt.
+$utf8NoBom = New-Object System.Text.UTF8Encoding $false
+
+function Write-Utf8NoBom {
+  param([string]$Path, [string]$Content)
+  [System.IO.File]::WriteAllText(
+    [System.IO.Path]::GetFullPath($Path),
+    $Content,
+    $utf8NoBom
+  )
+}
+
 # ── 1. Version bump ──────────────────────────────────────────────────────────
-$manifest = Get-Content "module.json" -Raw | ConvertFrom-Json
+$manifestRaw = [System.IO.File]::ReadAllText(
+  [System.IO.Path]::GetFullPath("module.json"),
+  $utf8NoBom
+)
+$manifest = $manifestRaw | ConvertFrom-Json
 $oldVer   = $manifest.version
 $ver      = [version]$oldVer
 
@@ -34,30 +54,29 @@ if ($Major) {
 Write-Host "Version: $oldVer -> $newVer" -ForegroundColor Cyan
 if ($DryRun) { Write-Host "[DryRun] Keine Aenderungen vorgenommen." -ForegroundColor Yellow; exit 0 }
 
-# ── 2. module.json updaten ───────────────────────────────────────────────────
-$raw = Get-Content "module.json" -Raw
-$raw = $raw -replace '"version": "[^"]*"', "`"version`": `"$newVer`""
-Set-Content "module.json" $raw -Encoding utf8
+# ── 2. module.json updaten (UTF-8 ohne BOM!) ─────────────────────────────────
+$newManifest = $manifestRaw -replace '"version": "[^"]*"', "`"version`": `"$newVer`""
+Write-Utf8NoBom "module.json" $newManifest
 Write-Host "Updated module.json" -ForegroundColor Green
 
 # ── 3. README.md Badge updaten ───────────────────────────────────────────────
 if (Test-Path "README.md") {
-  $readme = Get-Content "README.md" -Raw
-  # Update version badge  ![Version](https://img.shields.io/badge/version-X.Y.Z-...)
+  $readme = [System.IO.File]::ReadAllText(
+    [System.IO.Path]::GetFullPath("README.md"), $utf8NoBom)
   $readme = $readme -replace '(?<=version-)\d+\.\d+\.\d+(?=-)', $newVer
-  Set-Content "README.md" $readme -Encoding utf8
+  Write-Utf8NoBom "README.md" $readme
   Write-Host "Updated README.md (version badge)" -ForegroundColor Green
 }
 
 # ── 4. CHANGELOG.md: neuen Eintrag oben einfuegen ───────────────────────────
 $today    = (Get-Date).ToString("yyyy-MM-dd")
-$newEntry = "## $newVer – $today`n- (Bitte Aenderungen hier eintragen)`n"
+$newEntry = "## $newVer - $today`r`n- (Bitte Aenderungen hier eintragen)`r`n`r`n"
 
 if (Test-Path "CHANGELOG.md") {
-  $cl  = Get-Content "CHANGELOG.md" -Raw
-  # Insert after the first line (the "# Changelog" heading)
-  $cl  = $cl -replace '(# Changelog\r?\n)', "`$1`n$newEntry"
-  Set-Content "CHANGELOG.md" $cl -Encoding utf8
+  $cl = [System.IO.File]::ReadAllText(
+    [System.IO.Path]::GetFullPath("CHANGELOG.md"), $utf8NoBom)
+  $cl = $cl -replace '(# Changelog\r?\n)', "`$1`r`n$newEntry"
+  Write-Utf8NoBom "CHANGELOG.md" $cl
   Write-Host "Updated CHANGELOG.md (added placeholder for v$newVer)" -ForegroundColor Green
 }
 

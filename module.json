@@ -1,8 +1,8 @@
-﻿{
+{
   "id": "foundrydraw",
-  "title": "FoundryDraw â€“ Magic Circle Painter",
+  "title": "FoundryDraw - Magic Circle Painter",
   "description": "Adds a drawing canvas to Foundry VTT for painting magic circles. Includes brush, eraser, shapes, symmetry, undo/redo and more.",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "authors": [
     {
       "name": "Ibrahim"
@@ -35,4 +35,3 @@
   "download": "https://github.com/Gotova/FoundryDraw/releases/latest/download/foundrydraw.zip",
   "changelog": "https://github.com/Gotova/FoundryDraw/blob/main/CHANGELOG.md"
 }
-
