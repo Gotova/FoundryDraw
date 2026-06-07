@@ -164,8 +164,8 @@
 
 /* ───── Canvas Area ───── */
 .foundrydraw-canvas-wrap {
-  flex: 1;
-  min-height: 0;   /* allow the flex child to shrink below content-size */
+  width: 100%;
+  height: 600px;
   min-width: 720px;
   position: relative;
   overflow: hidden;
