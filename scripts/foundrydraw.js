@@ -23,7 +23,7 @@ class FoundryDrawApp extends Application {
 
     this._tool       = "brush";
     this._color      = "#030821";
-    this._brushSize  = 8;
+    this._brushSize  = 4;
     this._opacity    = 1.0;
     this._symmetry   = 1;
     this._keyHandler = null;
@@ -77,14 +77,8 @@ class FoundryDrawApp extends Application {
 
   <div class="fd-slider-group">
     <label>${i18n("Settings.BrushSize")}</label>
-    <input type="range" id="fd-brush-size" min="1" max="80" value="${this._brushSize}">
+    <input type="range" id="fd-brush-size" min="1" max="20" value="${this._brushSize}">
     <span class="fd-val" id="fd-brush-size-val">${this._brushSize}</span>
-  </div>
-
-  <div class="fd-slider-group">
-    <label>${i18n("Settings.Opacity")}</label>
-    <input type="range" id="fd-opacity" min="1" max="100" value="${Math.round(this._opacity * 100)}">
-    <span class="fd-val" id="fd-opacity-val">${Math.round(this._opacity * 100)}%</span>
   </div>
 
   <div class="separator"></div>
@@ -356,11 +350,6 @@ class FoundryDrawApp extends Application {
     html.find("#fd-brush-size").on("input", (e) => {
       this._brushSize = parseInt(e.currentTarget.value);
       html.find("#fd-brush-size-val").text(this._brushSize);
-    });
-
-    html.find("#fd-opacity").on("input", (e) => {
-      this._opacity = parseInt(e.currentTarget.value) / 100;
-      html.find("#fd-opacity-val").text(`${Math.round(this._opacity * 100)}%`);
     });
 
     html.find("#fd-symmetry").on("change", (e) => {

@@ -23,7 +23,6 @@
     },
     "Settings": {
       "BrushSize": "Brush",
-      "Opacity": "Opacity",
       "Color": "Color",
       "Symmetry": "Symmetry",
       "SymmetryNone": "None",

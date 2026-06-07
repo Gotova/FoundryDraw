@@ -1,14 +1,19 @@
 /* FoundryDraw - Magic Circle Painter */
 
 /* ───── Application Window ───── */
-.foundrydraw-app .window-content {
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+
+/*
+  Foundry applies `body.game .app.window-app .window-content > * { flex: none }`
+  globally. We match that specificity here to override padding and layout for
+  our own window without touching other apps.
+*/
+body.game .foundrydraw-app.window-app .window-content {
+  padding: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
   background: #2c2416;
-  /* Height is set explicitly by JS (setPosition / _initWhenReady) so that
-     the flex children can grow without fighting Foundry's own layout. */
+  gap: 0;
 }
 
 /* ───── Toolbar ───── */
