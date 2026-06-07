@@ -360,7 +360,6 @@ class FoundryDrawApp extends Application {
     html.find("#fd-redo").on("click", () => this._redo());
 
     html.find("#fd-clear").on("click", () => {
-      if (!confirm(game.i18n.localize("FOUNDRYDRAW.Actions.ClearConfirm"))) return;
       this._saveHistory();
       this._redoStack = [];
       this._fillBackground();

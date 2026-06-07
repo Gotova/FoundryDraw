@@ -1,7 +1,7 @@
 # Changelog
 
 ## 1.3.5 - 2026-06-08
-- (Bitte Aenderungen hier eintragen)
+- Remove: Confirmation dialog before clearing the canvas
 
 
 ## 1.3.4 - 2026-06-08

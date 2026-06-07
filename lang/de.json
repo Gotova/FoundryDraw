@@ -14,7 +14,6 @@
       "Undo": "Rueckgaengig (Ctrl+Z)",
       "Redo": "Wiederholen (Ctrl+Y)",
       "Clear": "Alles loeschen",
-      "ClearConfirm": "Wirklich alles loeschen?",
       "CopyClipboard": "In Zwischenablage kopieren",
       "CopiedClipboard": "Bild in Zwischenablage kopiert!",
       "CopyFallback": "Bild im neuen Tab geoeffnet - Rechtsklick -> Bild kopieren",

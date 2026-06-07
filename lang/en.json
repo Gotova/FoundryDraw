@@ -14,7 +14,6 @@
       "Undo": "Undo (Ctrl+Z)",
       "Redo": "Redo (Ctrl+Y)",
       "Clear": "Clear All",
-      "ClearConfirm": "Really clear everything?",
       "CopyClipboard": "Copy to Clipboard",
       "CopiedClipboard": "Image copied to clipboard!",
       "CopyFallback": "Image opened in new tab - right-click to Copy Image",
