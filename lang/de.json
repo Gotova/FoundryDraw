@@ -1,0 +1,38 @@
+{
+  "FOUNDRYDRAW": {
+    "ButtonTitle": "Magiekreis zeichnen",
+    "WindowTitle": "FoundryDraw – Magiekreis",
+    "Tools": {
+      "Brush": "Pinsel",
+      "Eraser": "Radiergummi",
+      "Line": "Linie",
+      "Circle": "Kreis",
+      "Rectangle": "Rechteck",
+      "Fill": "Füllen",
+      "Select": "Auswahl"
+    },
+    "Actions": {
+      "Undo": "Rückgängig",
+      "Redo": "Wiederholen",
+      "Clear": "Alles löschen",
+      "Save": "Als Bild speichern",
+      "ClearConfirm": "Wirklich alles löschen?"
+    },
+    "Settings": {
+      "BrushSize": "Pinselgröße",
+      "Opacity": "Deckkraft",
+      "Color": "Farbe",
+      "Symmetry": "Symmetrie",
+      "SymmetryNone": "Keine",
+      "Symmetry2": "2-fach",
+      "Symmetry4": "4-fach",
+      "Symmetry6": "6-fach",
+      "Symmetry8": "8-fach",
+      "Symmetry12": "12-fach",
+      "Background": "Hintergrund",
+      "BgBlack": "Schwarz",
+      "BgWhite": "Weiß",
+      "BgTransparent": "Transparent"
+    }
+  }
+}

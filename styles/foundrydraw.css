@@ -1,0 +1,223 @@
+/* FoundryDraw - Magic Circle Painter */
+
+#foundrydraw-btn {
+  order: -1;
+}
+
+#foundrydraw-btn i {
+  color: #a855f7;
+  transition: color 0.2s, text-shadow 0.2s;
+}
+
+#foundrydraw-btn:hover i {
+  color: #c084fc;
+  text-shadow: 0 0 8px #a855f7;
+}
+
+/* ───── Application Window ───── */
+.foundrydraw-app .window-content {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #1a1a2e;
+}
+
+/* ───── Toolbar ───── */
+.foundrydraw-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 8px;
+  background: #16213e;
+  border-bottom: 1px solid #0f3460;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.foundrydraw-toolbar .separator {
+  width: 1px;
+  height: 28px;
+  background: #0f3460;
+  margin: 0 2px;
+  flex-shrink: 0;
+}
+
+/* Tool Buttons */
+.fd-tool-btn {
+  width: 32px;
+  height: 32px;
+  border: 1px solid #0f3460;
+  border-radius: 4px;
+  background: #0f3460;
+  color: #8fa3c8;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: all 0.15s;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.fd-tool-btn:hover {
+  background: #1a4a80;
+  color: #c084fc;
+  border-color: #a855f7;
+}
+
+.fd-tool-btn.active {
+  background: #6d28d9;
+  color: #ffffff;
+  border-color: #a855f7;
+  box-shadow: 0 0 6px #a855f780;
+}
+
+.fd-tool-btn[data-tooltip]:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #0f3460;
+  color: #e2e8f0;
+  padding: 3px 7px;
+  border-radius: 4px;
+  font-size: 11px;
+  white-space: nowrap;
+  pointer-events: none;
+  border: 1px solid #a855f7;
+  z-index: 9999;
+}
+
+/* Color Picker */
+.fd-color-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  border: 2px solid #0f3460;
+  cursor: pointer;
+  padding: 0;
+  overflow: hidden;
+  flex-shrink: 0;
+  position: relative;
+  transition: border-color 0.15s;
+}
+
+.fd-color-btn:hover {
+  border-color: #a855f7;
+}
+
+.fd-color-btn input[type="color"] {
+  position: absolute;
+  inset: -4px;
+  width: calc(100% + 8px);
+  height: calc(100% + 8px);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  background: none;
+}
+
+/* Sliders */
+.fd-slider-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.fd-slider-group label {
+  color: #8fa3c8;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.fd-slider-group input[type="range"] {
+  width: 70px;
+  height: 4px;
+  accent-color: #a855f7;
+  cursor: pointer;
+}
+
+.fd-slider-group .fd-val {
+  color: #c084fc;
+  font-size: 11px;
+  min-width: 28px;
+  text-align: right;
+}
+
+/* Select (symmetry / background) */
+.fd-select {
+  height: 28px;
+  background: #0f3460;
+  color: #8fa3c8;
+  border: 1px solid #0f3460;
+  border-radius: 4px;
+  padding: 0 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+  flex-shrink: 0;
+}
+
+.fd-select:hover, .fd-select:focus {
+  border-color: #a855f7;
+  outline: none;
+  color: #e2e8f0;
+}
+
+/* ───── Canvas Area ───── */
+.foundrydraw-canvas-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #0d0d1a;
+  position: relative;
+}
+
+#foundrydraw-canvas {
+  display: block;
+  cursor: crosshair;
+  touch-action: none;
+  image-rendering: pixelated;
+}
+
+/* Cursor override per tool */
+.foundrydraw-canvas-wrap.tool-eraser #foundrydraw-canvas {
+  cursor: cell;
+}
+.foundrydraw-canvas-wrap.tool-fill #foundrydraw-canvas {
+  cursor: copy;
+}
+.foundrydraw-canvas-wrap.tool-line #foundrydraw-canvas,
+.foundrydraw-canvas-wrap.tool-circle #foundrydraw-canvas,
+.foundrydraw-canvas-wrap.tool-rect #foundrydraw-canvas {
+  cursor: crosshair;
+}
+
+/* Ghost canvas for shape preview */
+#foundrydraw-overlay {
+  position: absolute;
+  pointer-events: none;
+}
+
+/* ───── Status bar ───── */
+.foundrydraw-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3px 8px;
+  background: #16213e;
+  border-top: 1px solid #0f3460;
+  font-size: 11px;
+  color: #8fa3c8;
+  flex-shrink: 0;
+}
+
+.foundrydraw-status .fd-coords {
+  font-family: monospace;
+}
