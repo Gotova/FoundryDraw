@@ -3,17 +3,21 @@
 /* ───── Application Window ───── */
 
 /*
-  Foundry applies `body.game .app.window-app .window-content > * { flex: none }`
-  globally. We match that specificity here to override padding and layout for
-  our own window without touching other apps.
+  Foundry sets `body.game .app.window-app .window-content > * { flex: 1 }` globally,
+  which distributes space equally between toolbar, canvas and status bar — ignoring
+  our fixed height: 600px on the canvas wrap.
+  Override it with flex: none so each child uses its own defined size.
 */
+body.game .foundrydraw-app.window-app .window-content > * {
+  flex: none !important;
+}
+
 body.game .foundrydraw-app.window-app .window-content {
   padding: 0 !important;
   display: flex !important;
   flex-direction: column !important;
   overflow: hidden !important;
   background: #2c2416;
-  gap: 0;
 }
 
 /* ───── Toolbar ───── */

@@ -1,7 +1,7 @@
 # Changelog
 
 ## 1.3.4 - 2026-06-08
-- (Bitte Aenderungen hier eintragen)
+- Fix: Override Foundry's global `flex: 1` on .window-content children with `flex: none !important` so toolbar/canvas/status use their own defined sizes instead of sharing space equally
 
 
 ## 1.3.3 - 2026-06-08
