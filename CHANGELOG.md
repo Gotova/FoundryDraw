@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.1 - 2026-06-08
+- (Bitte Aenderungen hier eintragen)
+
+
 ## 1.3.0 - 2026-06-08
 - Fix: When the window is resized, the existing drawing now stays centred on the symmetry point instead of drifting to the top-left
 - Fix: Canvas height now scales correctly when the FoundryDraw window is resized (flex layout fix)
