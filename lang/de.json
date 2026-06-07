@@ -19,7 +19,8 @@
       "CopiedClipboard": "Bild in Zwischenablage kopiert!",
       "CopyFallback": "Bild im neuen Tab geoeffnet - Rechtsklick -> Bild kopieren",
       "CopyFailed": "Konnte kein neues Fenster oeffnen. Bitte 'Als PNG speichern' verwenden.",
-      "Save": "Als PNG speichern"
+      "Save": "Als PNG speichern",
+      "ShowPlayers": "Allen Spielern zeigen"
     },
     "Settings": {
       "BrushSize": "Pinsel",

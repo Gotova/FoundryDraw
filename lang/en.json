@@ -19,7 +19,8 @@
       "CopiedClipboard": "Image copied to clipboard!",
       "CopyFallback": "Image opened in new tab - right-click to Copy Image",
       "CopyFailed": "Could not open new window. Please use Save as PNG instead.",
-      "Save": "Save as PNG"
+      "Save": "Save as PNG",
+      "ShowPlayers": "Show to all players"
     },
     "Settings": {
       "BrushSize": "Brush",

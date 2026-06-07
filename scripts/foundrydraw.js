@@ -119,6 +119,12 @@ class FoundryDrawApp extends Application {
     <i class="fas fa-download"></i>
   </button>
 
+  ${game.user.isGM ? `
+  <div class="separator"></div>
+  <button class="fd-tool-btn" id="fd-show-players" data-tooltip="${i18n("Actions.ShowPlayers")}">
+    <i class="fas fa-eye"></i>
+  </button>` : ""}
+
 </div>
 
 <div class="foundrydraw-canvas-wrap" id="fd-canvas-wrap">
@@ -378,6 +384,9 @@ class FoundryDrawApp extends Application {
 
     html.find("#fd-clipboard").on("click", () => this._copyToClipboard());
     html.find("#fd-save").on("click", () => this._saveImage());
+    if (game.user.isGM) {
+      html.find("#fd-show-players").on("click", () => this._showToPlayers());
+    }
   }
 
   /* ──────────────────────────────────────────────
@@ -711,6 +720,16 @@ class FoundryDrawApp extends Application {
     }
   }
 
+  _showToPlayers() {
+    if (!game.user.isGM) return;
+    const src   = this._canvas.toDataURL("image/png");
+    const title = game.i18n.localize("FOUNDRYDRAW.WindowTitle");
+    // Show to GM immediately
+    new ImagePopout(src, { title, shareable: false }).render(true);
+    // Broadcast to all players (they receive it via the socket handler)
+    game.socket.emit(`module.${MODULE_ID}`, { type: "showImage", src, title });
+  }
+
   _saveImage() {
     const link    = document.createElement("a");
     link.download = `magic-circle-${Date.now()}.png`;
@@ -731,6 +750,20 @@ function openDrawApp() {
   }
   _appInstance.render(true);
 }
+
+/* ──────────────────────────────────────────────
+   Socket – show image to all players
+   ────────────────────────────────────────────── */
+
+Hooks.once("ready", () => {
+  game.socket.on(`module.${MODULE_ID}`, (data) => {
+    if (data.type !== "showImage") return;
+    new ImagePopout(data.src, {
+      title:     data.title ?? game.i18n.localize("FOUNDRYDRAW.WindowTitle"),
+      shareable: false,
+    }).render(true);
+  });
+});
 
 Hooks.on("getSceneControlButtons", (controls) => {
   const group = controls.tokens ?? Object.values(controls)[0];

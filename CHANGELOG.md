@@ -1,7 +1,8 @@
 # Changelog
 
 ## 1.4.0 - 2026-06-08
-- (Bitte Aenderungen hier eintragen)
+- Feature: GM-only "Show to all players" button (fa-eye) — converts the canvas to a PNG and displays it as an ImagePopout on every connected client via Foundry's module socket
+- module.json: added "socket": true to enable the module socket
 
 
 ## 1.3.9 - 2026-06-08
