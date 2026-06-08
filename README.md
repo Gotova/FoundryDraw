@@ -2,7 +2,7 @@
 
 > Ein Foundry VTT v13 Modul, das allen Spielern und dem GM eine Zeichenflaeche zum Malen von Magiekreisen bereitstellt.
 
-![Version](https://img.shields.io/badge/version-1.6.14-a855f7)
+![Version](https://img.shields.io/badge/version-1.6.15-a855f7)
 ![Foundry VTT](https://img.shields.io/badge/Foundry%20VTT-v13-0f3460)
 ![License](https://img.shields.io/badge/license-MIT-green)
 

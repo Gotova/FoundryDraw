@@ -1,7 +1,11 @@
 # Changelog
 
-## 1.6.14 - 2026-06-08
+## 1.6.15 - 2026-06-08
 - (Bitte Aenderungen hier eintragen)
+
+
+## 1.6.14 - 2026-06-08
+- Fix: Eraser now uses an SVG mask for true erasing — eraser strokes are painted as black paths into a mask applied to the drawing layer (black = transparent in SVG masks), so content is permanently removed rather than painted over; undo/redo and gallery save/load preserve the erase mask correctly
 
 
 ## 1.6.13 - 2026-06-08
