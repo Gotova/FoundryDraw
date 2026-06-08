@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.5.3 - 2026-06-08
+- Feature: Reference grid — 20 px world-space cells, warm-brown lines at 80 % opacity, 0.5 screen-pixel width; drawn on the display canvas only (never baked into the drawing); hides automatically when zoomed out so far that cells would be < 4 px on screen
+
+
 ## 1.5.2 - 2026-06-08
 - Fix: Gallery edit no longer loses quality — circles are now saved at full 2000×2000 world resolution instead of being downscaled to 800×800 first (the PNG still compresses well due to the large uniform parchment areas)
 

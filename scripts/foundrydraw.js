@@ -318,8 +318,53 @@ class FoundryDrawApp extends Application {
     ctx.drawImage(this._world, -this._viewX, -this._viewY);
     ctx.restore();
 
+    this._renderGrid();
     this._updateCenterMarker();
     this._updateZoomInfo();
+  }
+
+  /* Draw a reference grid on the display canvas (never on the world canvas).
+     Grid spacing is GRID_SIZE world pixels; lines are 0.5 screen pixels wide.
+     Hidden automatically when zoomed out so far that cells shrink below 4 px. */
+  _renderGrid() {
+    const GRID_SIZE      = 20;                          // world px per cell
+    const gridScreenSize = GRID_SIZE * this._zoom;
+    if (gridScreenSize < 4) return;                     // too dense — skip
+
+    const ctx = this._ctx;
+    const cw  = this._canvas.width;
+    const ch  = this._canvas.height;
+
+    // World-coord bounds of the current viewport
+    const wLeft   = this._viewX;
+    const wTop    = this._viewY;
+    const wRight  = this._viewX + cw / this._zoom;
+    const wBottom = this._viewY + ch / this._zoom;
+
+    // Snap grid start to the nearest grid line outside the viewport
+    const startX = Math.floor(wLeft  / GRID_SIZE) * GRID_SIZE;
+    const startY = Math.floor(wTop   / GRID_SIZE) * GRID_SIZE;
+
+    ctx.save();
+    // Work in world space so lines align with world coordinates
+    ctx.scale(this._zoom, this._zoom);
+    ctx.translate(-this._viewX, -this._viewY);
+
+    ctx.strokeStyle = "rgba(160, 110, 30, 0.8)";
+    ctx.lineWidth   = 0.5 / this._zoom;   // constant 0.5 screen-pixels at any zoom
+    ctx.beginPath();
+
+    for (let x = startX; x <= wRight;  x += GRID_SIZE) {
+      ctx.moveTo(x, wTop);
+      ctx.lineTo(x, wBottom);
+    }
+    for (let y = startY; y <= wBottom; y += GRID_SIZE) {
+      ctx.moveTo(wLeft,  y);
+      ctx.lineTo(wRight, y);
+    }
+
+    ctx.stroke();
+    ctx.restore();
   }
 
   /* Reposition the CSS crosshair element over the current world centre */
