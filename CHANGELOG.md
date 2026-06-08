@@ -1,7 +1,11 @@
 # Changelog
 
-## 1.6.4 - 2026-06-08
+## 1.6.5 - 2026-06-08
 - (Bitte Aenderungen hier eintragen)
+
+
+## 1.6.4 - 2026-06-08
+- Change: Default brush smoothness raised from 0 to 10
 
 
 ## 1.6.3 - 2026-06-08
