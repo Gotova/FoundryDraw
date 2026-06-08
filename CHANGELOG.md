@@ -1,7 +1,11 @@
 # Changelog
 
-## 1.6.12 - 2026-06-08
+## 1.6.13 - 2026-06-08
 - (Bitte Aenderungen hier eintragen)
+
+
+## 1.6.12 - 2026-06-08
+- Change: "Insert centred circle" button moved to sit directly after the brush button in the toolbar
 
 
 ## 1.6.11 - 2026-06-08
