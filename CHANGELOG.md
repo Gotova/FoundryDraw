@@ -1,7 +1,15 @@
 # Changelog
 
-## 1.6.1 - 2026-06-08
+## 1.6.3 - 2026-06-08
 - (Bitte Aenderungen hier eintragen)
+
+
+## 1.6.2 - 2026-06-08
+- Release of v1.6.0 + v1.6.1 features
+
+
+## 1.6.1 - 2026-06-08
+- Change: "Insert centred circle" is now an interactive radius picker — press the button (it highlights), hover over the canvas to see a live preview circle centred on the symmetry point, then click to place it at that exact radius; press the button again or hit Escape to cancel
 
 
 ## 1.6.0 - 2026-06-08
