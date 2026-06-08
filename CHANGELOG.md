@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.6.1 - 2026-06-08
+- (Bitte Aenderungen hier eintragen)
+
+
+## 1.6.0 - 2026-06-08
+- Feature: SVG drawing engine — the canvas has been replaced by a live `<svg>` element; every brush stroke, shape and circle is stored as a vector path, so the drawing is infinitely sharp at every zoom level
+- Feature: Save as SVG — the download button now exports a true `.svg` file instead of a rasterised PNG; open in Inkscape, Affinity Designer or a browser and the detail is perfect at any size
+- Feature: Gallery now saves SVG content so loading a saved circle back into the draw pad is completely lossless — no re-encoding round-trip
+- Change: History snapshots are now arrays of cloned SVG nodes (~KB each) instead of 16 MB ImageData objects; undo/redo is far more memory-efficient
+- Change: Eraser paints parchment-coloured strokes over drawing content (same behaviour, now fully vector)
+- Change: Copy to Clipboard and Show to Players rasterise the SVG to PNG at 2000×2000 for broad compatibility
+- Remove: Flood fill tool dropped — it is a fundamentally raster operation and has no meaningful SVG equivalent; the button has been removed from the toolbar
+
 ## 1.5.3 - 2026-06-08
 - Feature: Reference grid — 20 px world-space cells, warm-brown lines at 80 % opacity, 0.5 screen-pixel width; drawn on the display canvas only (never baked into the drawing); hides automatically when zoomed out so far that cells would be < 4 px on screen
 
