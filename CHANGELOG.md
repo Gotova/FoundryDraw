@@ -1,7 +1,11 @@
 # Changelog
 
-## 1.6.10 - 2026-06-08
+## 1.6.11 - 2026-06-08
 - (Bitte Aenderungen hier eintragen)
+
+
+## 1.6.10 - 2026-06-08
+- Change: SVG export is now cropped tightly around the drawing content instead of always exporting the full 2000×2000 canvas
 
 
 ## 1.6.9 - 2026-06-08
