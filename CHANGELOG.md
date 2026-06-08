@@ -1,7 +1,12 @@
 # Changelog
 
-## 1.6.7 - 2026-06-08
+## 1.6.8 - 2026-06-08
 - (Bitte Aenderungen hier eintragen)
+
+
+## 1.6.7 - 2026-06-08
+- Change: Gallery is now per-player — each user sees only their own saved magic circles (setting changed from world-scope to client-scope)
+- Feature: Hold Alt while drawing a line, circle or rectangle to snap both endpoints to the nearest grid point (20-unit grid, the same grid visible on the canvas)
 
 
 ## 1.6.6 - 2026-06-08
