@@ -1,7 +1,12 @@
 # Changelog
 
-## 1.6.5 - 2026-06-08
+## 1.6.6 - 2026-06-08
 - (Bitte Aenderungen hier eintragen)
+
+
+## 1.6.5 - 2026-06-08
+- Feature: Hold Shift while drawing a circle or rectangle to lock to equal dimensions (perfect circle / square)
+- Feature: Hold Ctrl while drawing any shape (line, circle, rectangle) to snap the endpoint to the nearest 45° angle (horizontal, vertical, or diagonal)
 
 
 ## 1.6.4 - 2026-06-08
