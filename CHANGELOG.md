@@ -1,7 +1,11 @@
 # Changelog
 
-## 1.6.11 - 2026-06-08
+## 1.6.12 - 2026-06-08
 - (Bitte Aenderungen hier eintragen)
+
+
+## 1.6.11 - 2026-06-08
+- Feature: New "Send to chat" button (paper-plane icon) — posts the current drawing as an image in the Foundry chat, visible to all players; uses the same tight-crop zoom as the gallery thumbnail
 
 
 ## 1.6.10 - 2026-06-08
