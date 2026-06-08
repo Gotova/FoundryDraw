@@ -1,7 +1,11 @@
 # Changelog
 
-## 1.6.8 - 2026-06-08
+## 1.6.9 - 2026-06-08
 - (Bitte Aenderungen hier eintragen)
+
+
+## 1.6.8 - 2026-06-08
+- Fix: Circle and rectangle symmetry copies are no longer distorted at 6/8/12-fold symmetry — shapes are now rotated as a whole around the world centre instead of recomputing an axis-aligned bounding box from rotated corner points (which gave wrong sizes at non-axis-aligned angles)
 
 
 ## 1.6.7 - 2026-06-08
