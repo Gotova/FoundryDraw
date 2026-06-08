@@ -1,7 +1,11 @@
 # Changelog
 
-## 1.6.6 - 2026-06-08
+## 1.6.7 - 2026-06-08
 - (Bitte Aenderungen hier eintragen)
+
+
+## 1.6.6 - 2026-06-08
+- Fix: ImagePopout deprecation warning in Foundry v13 — title is now passed as options.window.title instead of options.title
 
 
 ## 1.6.5 - 2026-06-08
