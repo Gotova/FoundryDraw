@@ -6,6 +6,19 @@
 const MODULE_ID = "foundrydraw";
 
 /* ──────────────────────────────────────────────
+   Settings
+   ────────────────────────────────────────────── */
+
+Hooks.once("init", () => {
+  game.settings.register(MODULE_ID, "gallery", {
+    scope:   "world",
+    config:  false,
+    type:    Array,
+    default: [],
+  });
+});
+
+/* ──────────────────────────────────────────────
    Application
    ────────────────────────────────────────────── */
 
@@ -112,10 +125,13 @@ class FoundryDrawApp extends Application {
   <button class="fd-tool-btn" id="fd-clear"          data-tooltip="${i18n("Actions.Clear")}">
     <i class="fas fa-trash"></i>
   </button>
-  <button class="fd-tool-btn" id="fd-clipboard" data-tooltip="${i18n("Actions.CopyClipboard")}">
+  <button class="fd-tool-btn" id="fd-clipboard"    data-tooltip="${i18n("Actions.CopyClipboard")}">
     <i class="fas fa-clipboard"></i>
   </button>
-  <button class="fd-tool-btn" id="fd-save"      data-tooltip="${i18n("Actions.Save")}">
+  <button class="fd-tool-btn" id="fd-save-gallery" data-tooltip="${i18n("Actions.SaveGallery")}">
+    <i class="fas fa-floppy-disk"></i>
+  </button>
+  <button class="fd-tool-btn" id="fd-save"         data-tooltip="${i18n("Actions.Save")}">
     <i class="fas fa-download"></i>
   </button>
 
@@ -252,6 +268,12 @@ class FoundryDrawApp extends Application {
     const oy = Math.round((this._back.height - h) / 2);
     this._fillBackground();
     this._ctx.drawImage(this._back, -ox, -oy);
+
+    // Keep the backing in sync with what is now on canvas so that any
+    // subsequent resize always starts from an accurately centred state.
+    // Without this, a subtle discrepancy after a gallery load causes the
+    // symmetry centre to appear shifted on the very first window widening.
+    this._syncToBacking();
   }
 
   /* ──────────────────────────────────────────────
@@ -383,6 +405,7 @@ class FoundryDrawApp extends Application {
     });
 
     html.find("#fd-clipboard").on("click", () => this._copyToClipboard());
+    html.find("#fd-save-gallery").on("click", () => this._saveToGallery());
     html.find("#fd-save").on("click", () => this._saveImage());
     if (game.user.isGM) {
       html.find("#fd-show-players").on("click", () => this._showToPlayers());
@@ -736,19 +759,237 @@ class FoundryDrawApp extends Application {
     link.href     = this._canvas.toDataURL("image/png");
     link.click();
   }
+
+  async _saveToGallery() {
+    const name = await _promptName(
+      game.i18n.localize("FOUNDRYDRAW.Gallery.NameTitle"), ""
+    );
+    if (name === null) return;
+    const trimmed = name.trim() || game.i18n.localize("FOUNDRYDRAW.Gallery.Unnamed");
+    const dataUrl = this._canvas.toDataURL("image/png");
+    const gallery = game.settings.get(MODULE_ID, "gallery");
+    gallery.push({ id: foundry.utils.randomID(), name: trimmed, dataUrl, createdAt: Date.now() });
+    await game.settings.set(MODULE_ID, "gallery", gallery);
+    ui.notifications.info(game.i18n.localize("FOUNDRYDRAW.Gallery.Saved"));
+    if (_galleryInstance?.rendered) _galleryInstance.render();
+  }
+
+  _loadFromDataUrl(dataUrl) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        // Resize the wrap height proportionally so the image fits without padding.
+        // wrapW is read before the style change to keep the calculation consistent.
+        const wrapW   = this._wrap.clientWidth;
+        const targetH = Math.max(Math.round(img.height * wrapW / img.width), 600);
+
+        // Update the wrap height and size the canvas directly.
+        // We deliberately do NOT call _onResize() here because that would try
+        // to restore old backing content (via _expandBacking + drawImage(back,...))
+        // before we have drawn the new image — corrupting the centering state.
+        this._wrap.style.height = `${targetH}px`;
+        this._applyCanvasSize(wrapW, targetH);
+
+        const cw    = this._canvas.width;   // === wrapW
+        const ch    = this._canvas.height;  // === targetH
+        this._fillBackground();
+
+        // Draw the image proportionally ("contain") so aspect-ratio is always
+        // preserved regardless of minor canvas/wrap dimension differences.
+        const scale = Math.min(cw / img.width, ch / img.height);
+        const dw    = Math.round(img.width  * scale);
+        const dh    = Math.round(img.height * scale);
+        this._ctx.drawImage(img, (cw - dw) / 2, (ch - dh) / 2, dw, dh);
+
+        // Reset the backing to exactly the current canvas size so there are
+        // no stale pixels that could reappear when the window is made wider.
+        this._back.width  = cw;
+        this._back.height = ch;
+        // this._backCtx remains valid after a canvas-dimension reset.
+
+        this._circleCount      = 0;
+        this._baseCircleRadius = null;
+        this._redoStack        = [];
+        this._history          = [];   // discard all pre-load history entries
+        this._saveHistory();
+        this._syncToBacking();  // ox = oy = 0 now → fills entire backing cleanly
+        this._updateHistoryInfo();
+        resolve();
+      };
+      img.src = dataUrl;
+    });
+  }
+}
+
+/* ──────────────────────────────────────────────
+   Shared helper – name prompt dialog
+   ────────────────────────────────────────────── */
+
+function _promptName(title, defaultValue = "") {
+  return new Promise((resolve) => {
+    new Dialog({
+      title,
+      content: `<div style="margin-bottom:8px">
+        <input type="text" id="fd-gallery-name" value="${defaultValue}"
+               style="width:100%;box-sizing:border-box">
+      </div>`,
+      buttons: {
+        ok: {
+          icon:     '<i class="fas fa-check"></i>',
+          label:    game.i18n.localize("FOUNDRYDRAW.Gallery.Confirm"),
+          callback: (html) => resolve(html.find("#fd-gallery-name").val()),
+        },
+        cancel: {
+          icon:     '<i class="fas fa-times"></i>',
+          label:    game.i18n.localize("Cancel"),
+          callback: () => resolve(null),
+        },
+      },
+      default: "ok",
+      render:  (html) => {
+        const inp = html.find("#fd-gallery-name")[0];
+        if (inp) { inp.focus(); inp.select(); }
+      },
+    }).render(true);
+  });
+}
+
+/* ──────────────────────────────────────────────
+   Gallery Application
+   ────────────────────────────────────────────── */
+
+class FoundryDrawGallery extends Application {
+  static get defaultOptions() {
+    return foundry.utils.mergeObject(super.defaultOptions, {
+      id:          "foundrydraw-gallery",
+      title:       game.i18n.localize("FOUNDRYDRAW.GalleryTitle"),
+      template:    null,
+      classes:     ["foundrydraw-gallery"],
+      width:       580,
+      height:      480,
+      resizable:   true,
+      minimizable: true,
+    });
+  }
+
+  async _renderInner() {
+    const i18n   = (k) => game.i18n.localize(`FOUNDRYDRAW.${k}`);
+    const gallery = game.settings.get(MODULE_ID, "gallery");
+
+    let items = "";
+    if (gallery.length === 0) {
+      items = `<p class="fd-gallery-empty">${i18n("Gallery.Empty")}</p>`;
+    } else {
+      for (const entry of gallery) {
+        const gmBtn = game.user.isGM
+          ? `<button class="fd-gallery-btn fd-gallery-show" data-id="${entry.id}"
+                     title="${i18n("Gallery.Show")}"><i class="fas fa-eye"></i></button>`
+          : "";
+        items += `
+          <div class="fd-gallery-item" data-id="${entry.id}">
+            <img class="fd-gallery-thumb" src="${entry.dataUrl}" alt="${entry.name}">
+            <div class="fd-gallery-name">${entry.name}</div>
+            <div class="fd-gallery-actions">
+              <button class="fd-gallery-btn fd-gallery-edit" data-id="${entry.id}"
+                      title="${i18n("Gallery.Edit")}"><i class="fas fa-pencil-alt"></i></button>
+              <button class="fd-gallery-btn fd-gallery-rename" data-id="${entry.id}"
+                      title="${i18n("Gallery.Rename")}"><i class="fas fa-i-cursor"></i></button>
+              ${gmBtn}
+              <button class="fd-gallery-btn fd-gallery-delete" data-id="${entry.id}"
+                      title="${i18n("Gallery.Delete")}"><i class="fas fa-trash"></i></button>
+            </div>
+          </div>`;
+      }
+    }
+
+    return $(`<div class="fd-gallery-grid">${items}</div>`);
+  }
+
+  activateListeners(html) {
+    super.activateListeners(html);
+    html.find(".fd-gallery-edit").on("click",   (e) => this._editEntry(e.currentTarget.dataset.id));
+    html.find(".fd-gallery-rename").on("click", (e) => this._renameEntry(e.currentTarget.dataset.id));
+    html.find(".fd-gallery-show").on("click",   (e) => this._showEntry(e.currentTarget.dataset.id));
+    html.find(".fd-gallery-delete").on("click", (e) => this._deleteEntry(e.currentTarget.dataset.id));
+  }
+
+  _editEntry(id) {
+    const gallery = game.settings.get(MODULE_ID, "gallery");
+    const entry   = gallery.find(e => e.id === id);
+    if (!entry) return;
+    openDrawApp();
+    // Poll until the draw-pad canvas is initialised, then load the image
+    const tryLoad = (n) => {
+      const app = _appInstance;
+      if (app?._canvas && app?._ctx && app?._back) {
+        app._loadFromDataUrl(entry.dataUrl);
+      } else if (n < 40) {
+        setTimeout(() => tryLoad(n + 1), 100);
+      }
+    };
+    tryLoad(0);
+  }
+
+  async _renameEntry(id) {
+    const gallery = game.settings.get(MODULE_ID, "gallery");
+    const idx     = gallery.findIndex(e => e.id === id);
+    if (idx < 0) return;
+    const newName = await _promptName(
+      game.i18n.localize("FOUNDRYDRAW.Gallery.RenameTitle"),
+      gallery[idx].name
+    );
+    if (!newName?.trim()) return;
+    gallery[idx].name = newName.trim();
+    await game.settings.set(MODULE_ID, "gallery", gallery);
+    this.render();
+  }
+
+  _showEntry(id) {
+    if (!game.user.isGM) return;
+    const gallery = game.settings.get(MODULE_ID, "gallery");
+    const entry   = gallery.find(e => e.id === id);
+    if (!entry) return;
+    new ImagePopout(entry.dataUrl, { title: entry.name, shareable: false }).render(true);
+    game.socket.emit(`module.${MODULE_ID}`, { type: "showImage", src: entry.dataUrl, title: entry.name });
+  }
+
+  async _deleteEntry(id) {
+    const gallery  = game.settings.get(MODULE_ID, "gallery");
+    const filtered = gallery.filter(e => e.id !== id);
+    await game.settings.set(MODULE_ID, "gallery", filtered);
+    this.render();
+  }
 }
 
 /* ──────────────────────────────────────────────
    Singleton + scene control button
    ────────────────────────────────────────────── */
 
-let _appInstance = null;
+let _appInstance     = null;
+let _galleryInstance = null;
 
 function openDrawApp() {
   if (!_appInstance || !_appInstance.rendered) {
     _appInstance = new FoundryDrawApp();
+    _appInstance.render(true);
+  } else {
+    // App is already rendered – bring it to front without re-rendering.
+    // A force-render (render(true)) would destroy all DOM elements, re-run
+    // activateListeners, and reset the backing canvas via _initCanvas(),
+    // wiping out any content the user has drawn or loaded from gallery.
+    if (_appInstance._minimized) _appInstance.maximize();
+    _appInstance.bringToTop();
   }
-  _appInstance.render(true);
+}
+
+function openGallery() {
+  if (!_galleryInstance || !_galleryInstance.rendered) {
+    _galleryInstance = new FoundryDrawGallery();
+    _galleryInstance.render(true);
+  } else {
+    if (_galleryInstance._minimized) _galleryInstance.maximize();
+    _galleryInstance.bringToTop();
+  }
 }
 
 /* ──────────────────────────────────────────────
@@ -769,13 +1010,25 @@ Hooks.on("getSceneControlButtons", (controls) => {
   const group = controls.tokens ?? Object.values(controls)[0];
   if (!group?.tools) return;
 
+  const baseOrder = (Object.keys(group.tools).length + 1) * 10;
+
   group.tools.foundrydraw = {
     name:    "foundrydraw",
     title:   game.i18n.localize("FOUNDRYDRAW.ButtonTitle"),
     icon:    "fas fa-magic",
     button:  true,
     visible: true,
-    order:   (Object.keys(group.tools).length + 1) * 10,
+    order:   baseOrder,
     onChange: () => openDrawApp(),
+  };
+
+  group.tools.foundrydrawgallery = {
+    name:    "foundrydrawgallery",
+    title:   game.i18n.localize("FOUNDRYDRAW.GalleryTitle"),
+    icon:    "fas fa-images",
+    button:  true,
+    visible: true,
+    order:   baseOrder + 10,
+    onChange: () => openGallery(),
   };
 });
