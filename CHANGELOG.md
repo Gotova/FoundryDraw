@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.5.2 - 2026-06-08
+- Fix: Gallery edit no longer loses quality — circles are now saved at full 2000×2000 world resolution instead of being downscaled to 800×800 first (the PNG still compresses well due to the large uniform parchment areas)
+
+
 ## 1.5.1 - 2026-06-08
 - Feature: Brush smoothness / stabiliser slider (0–10) — uses exponential moving average so small hand jitters are absorbed; the stroke always ends at the exact cursor position (remaining lag is flushed on mouse-up)
 

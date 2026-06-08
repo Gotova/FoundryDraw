@@ -859,12 +859,9 @@ class FoundryDrawApp extends Application {
     if (name === null) return;
     const trimmed = name.trim() || game.i18n.localize("FOUNDRYDRAW.Gallery.Unnamed");
 
-    // Scale the world canvas down for gallery storage to keep DB size manageable
-    const thumbSize = 800;
-    const tmp       = document.createElement("canvas");
-    tmp.width = tmp.height = thumbSize;
-    tmp.getContext("2d").drawImage(this._world, 0, 0, thumbSize, thumbSize);
-    const dataUrl = tmp.toDataURL("image/png");
+    // Save at full world resolution so that loading back is lossless.
+    // PNG compression keeps the file small (magic circles on parchment compress well).
+    const dataUrl = this._world.toDataURL("image/png");
 
     const gallery = game.settings.get(MODULE_ID, "gallery");
     gallery.push({ id: foundry.utils.randomID(), name: trimmed, dataUrl, createdAt: Date.now() });
