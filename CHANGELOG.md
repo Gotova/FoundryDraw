@@ -1,7 +1,11 @@
 # Changelog
 
-## 1.6.3 - 2026-06-08
+## 1.6.4 - 2026-06-08
 - (Bitte Aenderungen hier eintragen)
+
+
+## 1.6.3 - 2026-06-08
+- Fix: Reference grid is no longer included in exported SVG files, PNG clipboard copies, gallery thumbnails, or "Show to Players" images — it is now strictly an on-screen editing aid
 
 
 ## 1.6.2 - 2026-06-08
