@@ -39,6 +39,7 @@
     },
     "Settings": {
       "BrushSize": "Brush",
+      "Smoothness": "Smooth",
       "Color": "Color",
       "Symmetry": "Symmetry",
       "SymmetryNone": "None",

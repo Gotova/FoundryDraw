@@ -39,6 +39,7 @@
     },
     "Settings": {
       "BrushSize": "Pinsel",
+      "Smoothness": "Glaettung",
       "Color": "Farbe",
       "Symmetry": "Symmetrie",
       "SymmetryNone": "Keine",

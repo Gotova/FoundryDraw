@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.5.1 - 2026-06-08
+- Feature: Brush smoothness / stabiliser slider (0–10) — uses exponential moving average so small hand jitters are absorbed; the stroke always ends at the exact cursor position (remaining lag is flushed on mouse-up)
+
+
 ## 1.5.0 - 2026-06-08
 - Feature: Infinite canvas — all drawing now happens on a fixed 2000×2000 world canvas; the window is a zoomable/pannable viewport into it, so resizing the window never touches the drawing and the symmetry centre can never drift
 - Feature: Pan — hold right-click and drag to scroll around the canvas

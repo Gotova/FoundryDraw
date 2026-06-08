@@ -47,11 +47,14 @@ class FoundryDrawApp extends Application {
     this._panLastX  = 0;   // client coords for panning
     this._panLastY  = 0;
 
-    this._tool      = "brush";
-    this._color     = "#030821";
-    this._brushSize = 4;
-    this._opacity   = 1.0;
-    this._symmetry  = 1;
+    this._tool       = "brush";
+    this._color      = "#030821";
+    this._brushSize  = 4;
+    this._smoothness = 0;   // 0 = off, 1-10 = increasing stabilisation
+    this._smoothX    = 0;   // stabilised draw position (world coords)
+    this._smoothY    = 0;
+    this._opacity    = 1.0;
+    this._symmetry   = 1;
     this._keyHandler = null;
 
     // Viewport state
@@ -113,6 +116,12 @@ class FoundryDrawApp extends Application {
     <label>${i18n("Settings.BrushSize")}</label>
     <input type="range" id="fd-brush-size" min="1" max="20" value="${this._brushSize}">
     <span class="fd-val" id="fd-brush-size-val">${this._brushSize}</span>
+  </div>
+
+  <div class="fd-slider-group">
+    <label>${i18n("Settings.Smoothness")}</label>
+    <input type="range" id="fd-smooth" min="0" max="10" value="${this._smoothness}">
+    <span class="fd-val" id="fd-smooth-val">${this._smoothness}</span>
   </div>
 
   <div class="separator"></div>
@@ -382,6 +391,11 @@ class FoundryDrawApp extends Application {
       html.find("#fd-brush-size-val").text(this._brushSize);
     });
 
+    html.find("#fd-smooth").on("input", (e) => {
+      this._smoothness = parseInt(e.currentTarget.value);
+      html.find("#fd-smooth-val").text(this._smoothness);
+    });
+
     html.find("#fd-symmetry").on("change", (e) => {
       this._symmetry = parseInt(e.currentTarget.value);
     });
@@ -495,6 +509,10 @@ class FoundryDrawApp extends Application {
     const wp = this._screenToWorld(sp.x, sp.y);
     this._startX = this._lastX = wp.x;
     this._startY = this._lastY = wp.y;
+    // Initialise stabilised position exactly at the cursor so the first
+    // stroke segment starts cleanly regardless of smoothness setting.
+    this._smoothX = wp.x;
+    this._smoothY = wp.y;
     this._redoStack = [];
 
     if (this._tool === "fill") {
@@ -526,9 +544,15 @@ class FoundryDrawApp extends Application {
     const wp = this._screenToWorld(sp.x, sp.y);
 
     if (this._tool === "brush" || this._tool === "eraser") {
-      this._stroke(this._lastX, this._lastY, wp.x, wp.y);
-      this._lastX = wp.x;
-      this._lastY = wp.y;
+      // Exponential smoothing stabiliser.
+      // alpha = 1.0  → draw at exact cursor (no smoothing)
+      // alpha = 0.1  → draw 10% of the way to cursor each event (heavy smoothing)
+      const alpha    = this._smoothness === 0 ? 1.0 : 1.0 - this._smoothness * 0.09;
+      this._smoothX += (wp.x - this._smoothX) * alpha;
+      this._smoothY += (wp.y - this._smoothY) * alpha;
+      this._stroke(this._lastX, this._lastY, this._smoothX, this._smoothY);
+      this._lastX = this._smoothX;
+      this._lastY = this._smoothY;
       this._renderViewport();
     } else {
       // Live shape preview on the overlay canvas
@@ -557,6 +581,13 @@ class FoundryDrawApp extends Application {
       this._octx.clearRect(0, 0, this._overlay.width, this._overlay.height);
       this._drawShape(this._worldCtx, this._startX, this._startY, wp.x, wp.y);
       this._renderViewport();
+    } else if ((this._tool === "brush" || this._tool === "eraser") && this._smoothness > 0) {
+      // Flush: draw the remaining gap between the last stabilised position
+      // and the actual cursor so the stroke always ends where the user lifted.
+      if (this._lastX !== wp.x || this._lastY !== wp.y) {
+        this._stroke(this._lastX, this._lastY, wp.x, wp.y);
+        this._renderViewport();
+      }
     }
     this._saveHistory();
     this._updateHistoryInfo();
