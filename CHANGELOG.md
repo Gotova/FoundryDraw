@@ -1,7 +1,11 @@
 # Changelog
 
-## 1.6.9 - 2026-06-08
+## 1.6.10 - 2026-06-08
 - (Bitte Aenderungen hier eintragen)
+
+
+## 1.6.9 - 2026-06-08
+- Fix: Gallery thumbnails now zoom in tightly on the actual drawing content instead of always showing the full 2000×2000 canvas — small magic circles are now clearly visible in the gallery overview
 
 
 ## 1.6.8 - 2026-06-08
