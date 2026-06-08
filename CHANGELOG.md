@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.4.4 - 2026-06-08
+- (Bitte Aenderungen hier eintragen)
+
+
 ## 1.4.3 - 2026-06-08
 - Fix: After loading a gallery entry, the symmetry centre no longer drifts when the window is resized — the backing canvas is now reset to the exact loaded canvas size, so stale pixels from earlier (wider) sessions can no longer reappear at the edges
 
