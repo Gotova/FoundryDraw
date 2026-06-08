@@ -1,7 +1,7 @@
 # Changelog
 
 ## 1.4.2 - 2026-06-08
-- (Bitte Aenderungen hier eintragen)
+- Fix: Loading a gallery entry into the Draw Pad no longer distorts the aspect ratio — the image is now scaled proportionally ("contain") relative to the actual canvas dimensions after resize, preventing stretching caused by minor dimension drift (e.g. scrollbar)
 
 
 ## 1.4.1 - 2026-06-08
