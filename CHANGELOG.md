@@ -1,7 +1,7 @@
 # Changelog
 
 ## 1.4.4 - 2026-06-08
-- (Bitte Aenderungen hier eintragen)
+- Fix: Symmetry centre no longer shifts after loading a gallery entry and resizing the window — root cause was two separate bugs: (1) openDrawApp() called render(true) even when the draw pad was already open, which re-created all DOM elements and reset the backing canvas via _initCanvas(), destroying the loaded content; (2) _loadFromDataUrl called _onResize() internally, which attempted to restore old backing content before the new image was drawn, corrupting the centering state. Fix: openDrawApp/openGallery now call bringToTop() instead of render(true) when already rendered; _loadFromDataUrl uses _applyCanvasSize() directly instead of _onResize()
 
 
 ## 1.4.3 - 2026-06-08
