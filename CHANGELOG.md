@@ -1,7 +1,9 @@
 # Changelog
 
 ## 1.4.1 - 2026-06-08
-- (Bitte Aenderungen hier eintragen)
+- Feature: Gallery — save named magic circles from the Draw Pad (floppy-disk button) and browse them in a new "Magic Circle Gallery" window (fa-images button in the scene controls)
+- Feature: Gallery actions — load a saved circle back into the Draw Pad (edit), rename it, show it to all players (GM only), or delete it
+- Feature: Gallery is persisted as a world setting so saved circles survive server restarts
 
 
 ## 1.4.0 - 2026-06-08
