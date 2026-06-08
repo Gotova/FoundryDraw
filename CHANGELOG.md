@@ -1,7 +1,11 @@
 # Changelog
 
-## 1.6.15 - 2026-06-08
+## 1.6.16 - 2026-06-09
 - (Bitte Aenderungen hier eintragen)
+
+
+## 1.6.15 - 2026-06-08
+- Fix: Drawing over an erased area now works correctly — every brush stroke and shape writes a matching white path into the SVG erase mask alongside the visible stroke, which overrides any earlier black eraser paths in that region (later mask entries win in SVG rendering order)
 
 
 ## 1.6.14 - 2026-06-08
