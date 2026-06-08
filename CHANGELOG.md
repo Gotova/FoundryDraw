@@ -1,7 +1,15 @@
 # Changelog
 
-## 1.6.16 - 2026-06-09
+## 1.6.18 - 2026-06-09
 - (Bitte Aenderungen hier eintragen)
+
+
+## 1.6.17 - 2026-06-09
+- Feature: Gallery drag-and-drop reordering — each gallery card now has a grip handle (≡); drag a card onto another to swap their positions; the new order is persisted immediately
+
+
+## 1.6.16 - 2026-06-09
+- Fix: Drawing over an erased area now works correctly (white unmask paths written in DOM order after black erase paths)
 
 
 ## 1.6.15 - 2026-06-08
