@@ -1,7 +1,11 @@
 # Changelog
 
-## 1.6.13 - 2026-06-08
+## 1.6.14 - 2026-06-08
 - (Bitte Aenderungen hier eintragen)
+
+
+## 1.6.13 - 2026-06-08
+- Fix: Eraser now genuinely removes drawing content instead of painting over it with the parchment colour — uses SVG destination-out compositing on an isolated layer so erased areas reveal the real background
 
 
 ## 1.6.12 - 2026-06-08
