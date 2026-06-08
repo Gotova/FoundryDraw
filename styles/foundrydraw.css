@@ -172,13 +172,24 @@ body.game .foundrydraw-app.window-app .window-content {
 }
 
 /* ───── Canvas Area ───── */
+
+/*
+  Override the flex:none rule (applied to all .window-content children) for
+  the canvas wrap specifically, so it expands to fill the remaining window space.
+*/
+body.game .foundrydraw-app.window-app .window-content > .foundrydraw-canvas-wrap {
+  flex: 1 1 auto !important;
+  min-height: 300px;
+}
+
 .foundrydraw-canvas-wrap {
   width: 100%;
-  height: 600px;
-  min-width: 720px;
+  /* height is now flex-driven — do NOT set a fixed px value */
   position: relative;
   overflow: hidden;
+  /* Parchment bg shows through transparent world-canvas areas (e.g. erased spots) */
   background: #e8d5a3;
+  cursor: crosshair;
 }
 
 /*
@@ -207,11 +218,15 @@ body.game .foundrydraw-app.window-app .window-content {
 .foundrydraw-canvas-wrap.tool-eraser #foundrydraw-canvas { cursor: cell; }
 .foundrydraw-canvas-wrap.tool-fill   #foundrydraw-canvas { cursor: copy; }
 
+/* Panning cursor (applied via JS while right-button is held) */
+.foundrydraw-canvas-wrap.fd-panning  #foundrydraw-canvas { cursor: grab; }
+
 /* ───── Symmetry centre marker ───── */
+/* top/left are set dynamically by JS (_updateCenterMarker) to follow pan/zoom */
 #fd-center-marker {
   position: absolute;
-  top: 50%;
-  left: 50%;
+  top: 0;
+  left: 0;
   width: 20px;
   height: 20px;
   transform: translate(-50%, -50%);
@@ -267,6 +282,95 @@ body.game .foundrydraw-app.window-app .window-content {
   font-size: 11px;
   color: #b8965a;
   flex-shrink: 0;
+  gap: 12px;
 }
 
-.foundrydraw-status .fd-coords { font-family: monospace; }
+.foundrydraw-status .fd-coords  { font-family: monospace; flex: 1; }
+.foundrydraw-status #fd-zoom-info { font-family: monospace; min-width: 40px; text-align: right; }
+.foundrydraw-status #fd-history-info { color: #7a6040; white-space: nowrap; }
+
+/* ───── Gallery Application ───── */
+
+.foundrydraw-gallery .window-content {
+  padding: 8px;
+  overflow-y: auto;
+  background: #2c2416;
+}
+
+.fd-gallery-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 4px;
+  align-content: flex-start;
+}
+
+.fd-gallery-empty {
+  width: 100%;
+  text-align: center;
+  padding: 40px 16px;
+  color: #b8a070;
+  font-style: italic;
+  margin: 0;
+}
+
+.fd-gallery-item {
+  width: 160px;
+  background: #1a150e;
+  border: 1px solid #5a4020;
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.fd-gallery-item:hover {
+  border-color: #c8962a;
+}
+
+.fd-gallery-thumb {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  display: block;
+  border-bottom: 1px solid #5a4020;
+}
+
+.fd-gallery-name {
+  padding: 5px 7px;
+  color: #e8d5a3;
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+
+.fd-gallery-actions {
+  display: flex;
+  justify-content: space-around;
+  padding: 4px;
+  border-top: 1px solid #5a4020;
+  gap: 2px;
+}
+
+.fd-gallery-btn {
+  background: transparent;
+  border: none;
+  color: #b8a070;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 3px;
+  font-size: 12px;
+  line-height: 1;
+  transition: color 0.15s, background 0.15s;
+}
+
+.fd-gallery-btn:hover {
+  color: #e8d5a3;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.fd-gallery-delete:hover {
+  color: #e05050 !important;
+}

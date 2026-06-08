@@ -20,7 +20,22 @@
       "CopyFallback": "Bild im neuen Tab geoeffnet - Rechtsklick -> Bild kopieren",
       "CopyFailed": "Konnte kein neues Fenster oeffnen. Bitte 'Als PNG speichern' verwenden.",
       "Save": "Als PNG speichern",
-      "ShowPlayers": "Allen Spielern zeigen"
+      "SaveGallery": "In Galerie speichern",
+      "ShowPlayers": "Allen Spielern zeigen",
+      "CenterView": "Ansicht zuruecksetzen (Mitte + 100%)"
+    },
+    "GalleryTitle": "Magiekreis-Galerie",
+    "Gallery": {
+      "NameTitle": "In Galerie speichern",
+      "RenameTitle": "Kreis umbenennen",
+      "Confirm": "Speichern",
+      "Empty": "Noch keine gespeicherten Kreise. Zeichne etwas und klicke das Disketten-Symbol!",
+      "Edit": "In Zeichenpad laden",
+      "Rename": "Umbenennen",
+      "Show": "Spielern zeigen",
+      "Delete": "Loeschen",
+      "Saved": "In Galerie gespeichert!",
+      "Unnamed": "Unbenannter Kreis"
     },
     "Settings": {
       "BrushSize": "Pinsel",

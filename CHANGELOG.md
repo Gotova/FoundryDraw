@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.5.0 - 2026-06-08
+- Feature: Infinite canvas — all drawing now happens on a fixed 2000×2000 world canvas; the window is a zoomable/pannable viewport into it, so resizing the window never touches the drawing and the symmetry centre can never drift
+- Feature: Pan — hold right-click and drag to scroll around the canvas
+- Feature: Zoom — scroll wheel zooms in/out centred on the cursor; zoom range 10%–800%
+- Feature: Reset View button (fa-compress-arrows-alt) — snaps back to 100% zoom centred on the symmetry point
+- Change: Zoom percentage shown in status bar
+- Change: Coordinates in status bar are now relative to the symmetry centre (0, 0) rather than absolute canvas pixels
+- Change: Canvas height is now flex-driven (fills the window) instead of a fixed 600 px
+- Fix: Symmetry centre shift on resize/gallery-load is permanently eliminated — window resize only re-renders the viewport, world canvas is never modified
+
+
 ## 1.4.5 - 2026-06-08
 - Fix: Symmetry centre no longer shifts the first time the window is widened after loading a gallery entry — _onResize now calls _syncToBacking() after restoring the canvas so the backing always accurately mirrors the displayed canvas state; every subsequent resize therefore starts from a correctly centred backing. Pre-load history entries are also cleared in _loadFromDataUrl so stale ImageData snapshots from the previous drawing session cannot interfere.
 
