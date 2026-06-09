@@ -1,7 +1,11 @@
 # Changelog
 
-## 1.6.19 - 2026-06-09
+## 1.6.20 - 2026-06-09
 - (Bitte Aenderungen hier eintragen)
+
+
+## 1.6.19 - 2026-06-09
+- Feature: Live-draw broadcast — GM-only broadcast-tower button toggles a real-time stream of the drawing to all connected players; a live viewer window opens automatically on player clients and updates every stroke (~200 ms throttle during brush, immediate on stroke end); button pulses red while active; clicking again stops the stream and closes player windows
 
 
 ## 1.6.18 - 2026-06-09
