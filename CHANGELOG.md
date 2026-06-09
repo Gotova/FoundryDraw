@@ -1,7 +1,11 @@
 # Changelog
 
-## 1.6.20 - 2026-06-09
+## 1.6.21 - 2026-06-09
 - (Bitte Aenderungen hier eintragen)
+
+
+## 1.6.20 - 2026-06-09
+- Feature: Text tool (T / fa-font button) — click anywhere on the canvas to place a floating input; type and press Enter to stamp the text as a vector SVG element; Escape cancels; font size follows the brush-size slider (× 8 world units); respects the current colour, opacity, and symmetry; the cursor changes to a text I-beam while the tool is active
 
 
 ## 1.6.19 - 2026-06-09
