@@ -1,7 +1,11 @@
 # Changelog
 
-## 1.6.26 - 2026-06-09
+## 1.6.27 - 2026-06-09
 - (Bitte Aenderungen hier eintragen)
+
+
+## 1.6.26 - 2026-06-09
+- Feature: Shift-click in select tool toggles individual elements in/out of the current selection without clearing it; Shift+drag on empty canvas draws an additive marquee that adds to the existing selection instead of replacing it
 
 
 ## 1.6.25 - 2026-06-09
