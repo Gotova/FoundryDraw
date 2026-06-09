@@ -1,7 +1,11 @@
 # Changelog
 
-## 1.6.28 - 2026-06-09
+## 1.6.29 - 2026-06-09
 - (Bitte Aenderungen hier eintragen)
+
+
+## 1.6.28 - 2026-06-09
+- Fix: Alt-grid-snap when moving selected elements now snaps the element's bounding-box corner to the grid rather than the cursor position, so the snap target is consistent regardless of where inside the element the drag was started
 
 
 ## 1.6.27 - 2026-06-09
