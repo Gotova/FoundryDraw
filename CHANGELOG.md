@@ -1,7 +1,11 @@
 # Changelog
 
-## 1.6.18 - 2026-06-09
+## 1.6.19 - 2026-06-09
 - (Bitte Aenderungen hier eintragen)
+
+
+## 1.6.18 - 2026-06-09
+- Feature: Gallery folders — create named folders to organise drawings; click a folder header to collapse/expand it; drag drawings onto a folder header or use the folder-icon button per card to move them in; drag folder headers to reorder folders; deleting a folder moves its entries back to Uncategorized
 
 
 ## 1.6.17 - 2026-06-09
