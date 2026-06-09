@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.6.25 - 2026-06-09
+- (Bitte Aenderungen hier eintragen)
+
+
+## 1.6.24 - 2026-06-09
+- Feature: Select tool (mouse-pointer icon) — click any drawn element (path, shape, circle, text) to select it; a dashed blue bounding box appears with a rotation handle (small circle) above it; drag the element body to move it; drag the rotation handle to rotate the element around its visual centre; click empty canvas or press Escape to deselect; moves and rotations are fully undoable
+
 ## 1.6.23 - 2026-06-09
 - (Bitte Aenderungen hier eintragen)
 
