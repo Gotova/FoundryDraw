@@ -1,7 +1,11 @@
 # Changelog
 
-## 1.6.21 - 2026-06-09
+## 1.6.22 - 2026-06-09
 - (Bitte Aenderungen hier eintragen)
+
+
+## 1.6.21 - 2026-06-09
+- Change: Parchment background now has a procedural paper-grain texture — an SVG feTurbulence fractalNoise filter multiplies warm-toned grain (15 % red / 12 % green / 6 % blue darkening range) onto the base colour; texture is baked into SVG exports, gallery thumbnails, chat images and the live viewer
 
 
 ## 1.6.20 - 2026-06-09
