@@ -1,7 +1,11 @@
 # Changelog
 
-## 1.6.27 - 2026-06-09
+## 1.6.28 - 2026-06-09
 - (Bitte Aenderungen hier eintragen)
+
+
+## 1.6.27 - 2026-06-09
+- Feature: Select tool modifier keys — hold Ctrl while moving to constrain the drag direction to the nearest 45° increment (horizontal, vertical or diagonal); hold Alt while moving to snap the cursor to the 20-unit grid; hold Ctrl while rotating to snap the angle to the nearest 45° step; modifiers work for single-element and multi-element selections alike
 
 
 ## 1.6.26 - 2026-06-09
