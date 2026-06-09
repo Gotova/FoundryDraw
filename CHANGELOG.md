@@ -1,7 +1,11 @@
 # Changelog
 
-## 1.6.25 - 2026-06-09
+## 1.6.26 - 2026-06-09
 - (Bitte Aenderungen hier eintragen)
+
+
+## 1.6.25 - 2026-06-09
+- Feature: Select tool marquee — click and drag on empty canvas to draw a rubber-band selection rectangle; all elements whose bounding box overlaps the rectangle are selected simultaneously; the shared dashed outline and rotation handle appear around the group; drag to move all selected elements together or drag the handle to rotate them around the group centre
 
 
 ## 1.6.24 - 2026-06-09
