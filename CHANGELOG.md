@@ -1,7 +1,11 @@
 # Changelog
 
-## 1.6.22 - 2026-06-09
+## 1.6.23 - 2026-06-09
 - (Bitte Aenderungen hier eintragen)
+
+
+## 1.6.22 - 2026-06-09
+- Feature: Eraser cursor ring — while the eraser tool is active, two concentric circles (dark outer ring + white inner ring, both pixel-constant via vector-effect) show the exact eraser diameter under the cursor; the system cursor is hidden so only the ring is visible; the ring disappears when the pointer leaves the canvas or a different tool is selected
 
 
 ## 1.6.21 - 2026-06-09
