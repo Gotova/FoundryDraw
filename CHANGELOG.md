@@ -1,7 +1,11 @@
 # Changelog
 
-## 1.6.29 - 2026-06-09
+## 1.6.30 - 2026-06-09
 - (Bitte Aenderungen hier eintragen)
+
+
+## 1.6.29 - 2026-06-09
+- Fix: Moving or rotating a selected element no longer leaves it invisible when dragged over a previously-erased area — a white unmask clone of the element is appended to the erase mask at the new position on every commit, overriding any black eraser paths that cover that region
 
 
 ## 1.6.28 - 2026-06-09
