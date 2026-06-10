@@ -1,7 +1,11 @@
 # Changelog
 
-## 1.6.30 - 2026-06-09
+## 1.6.31 - 2026-06-10
 - (Bitte Aenderungen hier eintragen)
+
+
+## 1.6.30 - 2026-06-09
+- Feature: Delete selected elements via the Delete key (or Backspace on Mac), or by clicking the red ✕ button that appears at the top-right corner of the selection bounding box; deletion is undoable
 
 
 ## 1.6.29 - 2026-06-09
