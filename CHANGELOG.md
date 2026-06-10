@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.6.34 - 2026-06-10
+- (Bitte Aenderungen hier eintragen)
+
+
 ## 1.6.33 - 2026-06-10
 - (Bitte Aenderungen hier eintragen)
 
