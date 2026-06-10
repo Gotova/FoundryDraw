@@ -1,7 +1,11 @@
 # Changelog
 
-## 1.6.31 - 2026-06-10
+## 1.6.32 - 2026-06-10
 - (Bitte Aenderungen hier eintragen)
+
+
+## 1.6.31 - 2026-06-10
+- Feature: Ink counter in status bar — shows the total "ink used" (sum of stroke-length × stroke-width for every drawn element) as a blue number with a pen icon (🖋); hover for tooltip; use it to calibrate how much ink equals one spell point
 
 
 ## 1.6.30 - 2026-06-09
