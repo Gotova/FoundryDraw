@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.6.35 - 2026-06-11
+- (Bitte Aenderungen hier eintragen)
+
+
 ## 1.6.34 - 2026-06-10
 - (Bitte Aenderungen hier eintragen)
 
@@ -8,8 +12,14 @@
 - (Bitte Aenderungen hier eintragen)
 
 
+## 1.6.34 - 2026-06-11
+- Change: Ink counter now sums raw stroke lengths only — stroke width no longer affects the number
+
+## 1.6.33 - 2026-06-11
+- Change: The red ✕ delete button on selections is now about half its previous size (hit area unchanged)
+
 ## 1.6.32 - 2026-06-10
-- (Bitte Aenderungen hier eintragen)
+- Feature: Ink counter in status bar (released as part of 1.6.31/1.6.32)
 
 
 ## 1.6.31 - 2026-06-10
