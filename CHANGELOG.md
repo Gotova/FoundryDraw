@@ -1,7 +1,7 @@
 # Changelog
 
 ## 1.6.36 - 2026-06-11
-- (Bitte Aenderungen hier eintragen)
+- Fix: The clickable hitbox of the red ✕ delete button now matches the visible button exactly (it was previously four times the button's radius, swallowing clicks near the selection)
 
 
 ## 1.6.35 - 2026-06-11
