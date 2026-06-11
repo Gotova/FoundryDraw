@@ -1,7 +1,8 @@
 # Changelog
 
 ## 1.6.37 - 2026-06-11
-- (Bitte Aenderungen hier eintragen)
+- Feature: Spell level badge — a parchment-styled badge in the top-right corner of the canvas shows what spell level the circle can hold, derived from the ink used (ink < 3 = Cantrip, < 8 = 1st, < 12 = 2nd, < 15 = 3rd, < 17 = 4th, < 19 = 5th, < 20 = 6th, < 21 = 7th, < 22 = 8th, < 23 = 9th; at 23+ the badge turns red and reads "Beyond 9th Level"); hidden while the canvas is empty
+- Change: Ink counter is now displayed in ink units (1 ink = 1000 world-units of stroke length) with one decimal place, matching the spell-level threshold scale
 
 
 ## 1.6.36 - 2026-06-11
