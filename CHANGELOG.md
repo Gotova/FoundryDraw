@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.6.36 - 2026-06-11
+- (Bitte Aenderungen hier eintragen)
+
+
 ## 1.6.35 - 2026-06-11
 - Change: Gallery drawings are now stored on the server (as flags on the user document) instead of in the browser's local storage — your gallery follows you to any machine; each player still has their own private gallery; existing local galleries are migrated to the server automatically on first load
 
